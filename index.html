@@ -2,10 +2,618 @@
 <html lang="nl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lege Pagina</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Voice Notes</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#4A90E2">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="icon-192.png">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            color: #333;
+            overflow-x: hidden;
+        }
+
+        .container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+            max-width: 600px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+            padding-top: 20px;
+        }
+
+        h1 {
+            font-size: 28px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .subtitle {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .card {
+            background: white;
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+        .record-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .record-btn {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            border: none;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            font-size: 48px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 20px rgba(102, 126, 234, 0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .record-btn:active {
+            transform: scale(0.95);
+        }
+
+        .record-btn.recording {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                box-shadow: 0 4px 20px rgba(245, 87, 108, 0.4);
+            }
+            50% {
+                box-shadow: 0 4px 40px rgba(245, 87, 108, 0.8);
+            }
+        }
+
+        .status {
+            font-size: 16px;
+            color: #666;
+            text-align: center;
+            min-height: 24px;
+        }
+
+        .status.listening {
+            color: #f5576c;
+            font-weight: 600;
+        }
+
+        .transcript-section {
+            min-height: 150px;
+        }
+
+        .transcript-label {
+            font-size: 14px;
+            font-weight: 600;
+            color: #666;
+            margin-bottom: 12px;
+        }
+
+        .transcript {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 15px;
+            min-height: 100px;
+            font-size: 16px;
+            line-height: 1.6;
+            color: #333;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
+        .transcript.empty {
+            color: #999;
+            font-style: italic;
+        }
+
+        .email-section {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        label {
+            font-size: 14px;
+            font-weight: 600;
+            color: #666;
+        }
+
+        input[type="email"] {
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        input[type="email"]:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 12px;
+            margin-top: 8px;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 14px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:active {
+            transform: scale(0.98);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .btn-secondary {
+            background: #f8f9fa;
+            color: #666;
+        }
+
+        .btn-secondary:active {
+            transform: scale(0.98);
+        }
+
+        .success-message, .error-message {
+            padding: 12px;
+            border-radius: 10px;
+            text-align: center;
+            font-size: 14px;
+            margin-top: 12px;
+            display: none;
+        }
+
+        .success-message {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .error-message {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .history-section {
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .history-item {
+            background: #f8f9fa;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            font-size: 14px;
+            border-left: 3px solid #667eea;
+        }
+
+        .history-time {
+            font-size: 12px;
+            color: #999;
+            margin-bottom: 4px;
+        }
+
+        .loading {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        footer {
+            text-align: center;
+            color: white;
+            padding: 20px;
+            font-size: 12px;
+            opacity: 0.8;
+        }
+
+        .install-prompt {
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            padding: 12px 20px;
+            border-radius: 10px;
+            color: white;
+            text-align: center;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .install-prompt button {
+            background: white;
+            color: #667eea;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-weight: 600;
+            margin-top: 8px;
+            cursor: pointer;
+        }
+    </style>
 </head>
 <body>
+    <div class="container">
+        <div class="install-prompt" id="installPrompt">
+            <div>Installeer deze app op je telefoon voor snelle toegang</div>
+            <button id="installBtn">Installeer</button>
+        </div>
 
+        <header>
+            <h1>🎙️ Voice Notes</h1>
+            <div class="subtitle">Spreek je gedachten in en verstuur ze naar je email</div>
+        </header>
+
+        <div class="card record-section">
+            <button class="record-btn" id="recordBtn" aria-label="Opnemen">
+                <span id="micIcon">🎤</span>
+            </button>
+            <div class="status" id="status">Tik om op te nemen</div>
+        </div>
+
+        <div class="card transcript-section">
+            <div class="transcript-label">Getranscribeerde tekst:</div>
+            <div class="transcript empty" id="transcript">Je opname verschijnt hier...</div>
+        </div>
+
+        <div class="card email-section">
+            <div class="input-group">
+                <label for="emailInput">Jouw email adres:</label>
+                <input type="email" id="emailInput" placeholder="jouw@email.nl" />
+            </div>
+            <div class="button-group">
+                <button class="btn btn-secondary" id="clearBtn">Wissen</button>
+                <button class="btn btn-primary" id="sendBtn" disabled>Verzenden</button>
+            </div>
+            <div class="success-message" id="successMessage">✓ Email succesvol verzonden!</div>
+            <div class="error-message" id="errorMessage">Er ging iets mis. Probeer opnieuw.</div>
+        </div>
+
+        <div class="card history-section" id="historySection" style="display: none;">
+            <div class="transcript-label">Recente notities:</div>
+            <div id="history"></div>
+        </div>
+    </div>
+
+    <footer>
+        Voice Notes App - Maak snel voice memos
+    </footer>
+
+    <script>
+        // Check for browser support
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+        if (!SpeechRecognition) {
+            alert('Spraakherkenning wordt niet ondersteund in deze browser. Gebruik Chrome of Safari.');
+        }
+
+        // Initialize speech recognition
+        const recognition = new SpeechRecognition();
+        recognition.lang = 'nl-NL';
+        recognition.interimResults = true;
+        recognition.continuous = true;
+
+        // UI elements
+        const recordBtn = document.getElementById('recordBtn');
+        const micIcon = document.getElementById('micIcon');
+        const status = document.getElementById('status');
+        const transcript = document.getElementById('transcript');
+        const emailInput = document.getElementById('emailInput');
+        const sendBtn = document.getElementById('sendBtn');
+        const clearBtn = document.getElementById('clearBtn');
+        const successMessage = document.getElementById('successMessage');
+        const errorMessage = document.getElementById('errorMessage');
+        const historySection = document.getElementById('historySection');
+        const history = document.getElementById('history');
+
+        let isRecording = false;
+        let finalTranscript = '';
+        let interimTranscript = '';
+
+        // Load saved email from localStorage
+        const savedEmail = localStorage.getItem('userEmail');
+        if (savedEmail) {
+            emailInput.value = savedEmail;
+        }
+
+        // Load history from localStorage
+        function loadHistory() {
+            const historyData = JSON.parse(localStorage.getItem('voiceNotesHistory') || '[]');
+            if (historyData.length > 0) {
+                historySection.style.display = 'block';
+                history.innerHTML = historyData.slice(0, 5).map(item => `
+                    <div class="history-item">
+                        <div class="history-time">${new Date(item.time).toLocaleString('nl-NL')}</div>
+                        <div>${item.text.substring(0, 100)}${item.text.length > 100 ? '...' : ''}</div>
+                    </div>
+                `).join('');
+            }
+        }
+
+        function saveToHistory(text) {
+            const historyData = JSON.parse(localStorage.getItem('voiceNotesHistory') || '[]');
+            historyData.unshift({ time: Date.now(), text });
+            localStorage.setItem('voiceNotesHistory', JSON.stringify(historyData.slice(0, 10)));
+            loadHistory();
+        }
+
+        loadHistory();
+
+        // Recording button handler
+        recordBtn.addEventListener('click', () => {
+            if (!isRecording) {
+                startRecording();
+            } else {
+                stopRecording();
+            }
+        });
+
+        function startRecording() {
+            isRecording = true;
+            recordBtn.classList.add('recording');
+            micIcon.textContent = '⏸️';
+            status.textContent = 'Aan het luisteren...';
+            status.classList.add('listening');
+            recognition.start();
+        }
+
+        function stopRecording() {
+            isRecording = false;
+            recordBtn.classList.remove('recording');
+            micIcon.textContent = '🎤';
+            status.textContent = 'Opname gestopt';
+            status.classList.remove('listening');
+            recognition.stop();
+        }
+
+        // Speech recognition handlers
+        recognition.onresult = (event) => {
+            interimTranscript = '';
+
+            for (let i = event.resultIndex; i < event.results.length; i++) {
+                const transcriptSegment = event.results[i][0].transcript;
+                if (event.results[i].isFinal) {
+                    finalTranscript += transcriptSegment + ' ';
+                } else {
+                    interimTranscript += transcriptSegment;
+                }
+            }
+
+            const fullText = finalTranscript + interimTranscript;
+            if (fullText.trim()) {
+                transcript.textContent = fullText;
+                transcript.classList.remove('empty');
+                sendBtn.disabled = !emailInput.value.trim();
+            }
+        };
+
+        recognition.onerror = (event) => {
+            console.error('Speech recognition error:', event.error);
+            stopRecording();
+            status.textContent = 'Fout: ' + event.error;
+
+            // Auto-restart on some errors
+            if (event.error === 'no-speech' || event.error === 'audio-capture') {
+                setTimeout(() => {
+                    if (isRecording) {
+                        recognition.start();
+                    }
+                }, 1000);
+            }
+        };
+
+        recognition.onend = () => {
+            if (isRecording) {
+                recognition.start(); // Keep recognition running while button is pressed
+            }
+        };
+
+        // Email input handler
+        emailInput.addEventListener('input', () => {
+            const email = emailInput.value.trim();
+            sendBtn.disabled = !email || !finalTranscript.trim();
+
+            if (email && email.includes('@')) {
+                localStorage.setItem('userEmail', email);
+            }
+        });
+
+        // Clear button handler
+        clearBtn.addEventListener('click', () => {
+            finalTranscript = '';
+            interimTranscript = '';
+            transcript.textContent = 'Je opname verschijnt hier...';
+            transcript.classList.add('empty');
+            sendBtn.disabled = true;
+            hideMessages();
+        });
+
+        // Send button handler
+        sendBtn.addEventListener('click', async () => {
+            const email = emailInput.value.trim();
+            const text = finalTranscript.trim();
+
+            if (!email || !text) return;
+
+            sendBtn.disabled = true;
+            sendBtn.innerHTML = '<span class="loading"></span>';
+            hideMessages();
+
+            try {
+                // Send email using mailto (simple solution)
+                // In production, you would use a backend service
+                const subject = 'Voice Note - ' + new Date().toLocaleString('nl-NL');
+                const body = encodeURIComponent(text);
+
+                // Save to history
+                saveToHistory(text);
+
+                // For now, we'll use a simple backend endpoint
+                // You'll need to set this up
+                const response = await fetch('/api/send-email', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        to: email,
+                        subject: subject,
+                        text: text
+                    })
+                });
+
+                if (response.ok) {
+                    showSuccess();
+                    clearBtn.click();
+                } else {
+                    throw new Error('Failed to send email');
+                }
+            } catch (error) {
+                console.error('Error sending email:', error);
+                // Fallback to mailto
+                const subject = 'Voice Note - ' + new Date().toLocaleString('nl-NL');
+                const body = encodeURIComponent(text);
+                window.location.href = `mailto:${email}?subject=${encodeURIComponent(subject)}&body=${body}`;
+                showSuccess();
+                saveToHistory(text);
+                setTimeout(() => clearBtn.click(), 2000);
+            } finally {
+                sendBtn.disabled = false;
+                sendBtn.textContent = 'Verzenden';
+            }
+        });
+
+        function showSuccess() {
+            successMessage.style.display = 'block';
+            setTimeout(() => {
+                successMessage.style.display = 'none';
+            }, 3000);
+        }
+
+        function showError() {
+            errorMessage.style.display = 'block';
+            setTimeout(() => {
+                errorMessage.style.display = 'none';
+            }, 3000);
+        }
+
+        function hideMessages() {
+            successMessage.style.display = 'none';
+            errorMessage.style.display = 'none';
+        }
+
+        // PWA Install prompt
+        let deferredPrompt;
+        const installPrompt = document.getElementById('installPrompt');
+        const installBtn = document.getElementById('installBtn');
+
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            installPrompt.style.display = 'block';
+        });
+
+        installBtn.addEventListener('click', async () => {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                const { outcome } = await deferredPrompt.userChoice;
+                deferredPrompt = null;
+                installPrompt.style.display = 'none';
+            }
+        });
+
+        window.addEventListener('appinstalled', () => {
+            deferredPrompt = null;
+            installPrompt.style.display = 'none';
+        });
+
+        // Prevent accidental page refresh
+        window.addEventListener('beforeunload', (e) => {
+            if (finalTranscript.trim() && isRecording) {
+                e.preventDefault();
+                e.returnValue = '';
+            }
+        });
+
+        // Register Service Worker for PWA functionality
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/service-worker.js')
+                    .then((registration) => {
+                        console.log('Service Worker registered:', registration.scope);
+                    })
+                    .catch((error) => {
+                        console.log('Service Worker registration failed:', error);
+                    });
+            });
+        }
+    </script>
 </body>
 </html>
