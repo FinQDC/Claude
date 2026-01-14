@@ -442,8 +442,9 @@
 
         <div class="controls">
             <button class="btn btn-primary" onclick="resetView()">↺ Hoofdprocessen</button>
-            <button class="btn btn-secondary" onclick="showEventsOverview()">📅 Event Overzicht</button>
-            <button class="btn btn-success" onclick="showAddModal()">+ Nieuw Proces</button>
+            <button class="btn btn-secondary" onclick="showEventsOverview()" id="eventsBtn">📅 Event Overzicht</button>
+            <button class="btn btn-secondary" onclick="showBeleidsachtbaan()">🔄 Beleidsachtbaan (7 fases)</button>
+            <button class="btn btn-success" onclick="showAddModal()">+ Nieuw Event</button>
             <button class="btn btn-secondary" onclick="toggleDataTable()">📊 Data Tabel</button>
             <button class="btn btn-secondary" onclick="exportData()">💾 Exporteer Data</button>
         </div>
@@ -451,13 +452,28 @@
         <div class="main-content">
             <div class="process-view">
                 <div class="info-box">
-                    <h4>NEN Normen Referenties:</h4>
-                    <ul>
-                        <li><strong>NEN-ISO 55000:</strong> Asset Management systemen</li>
-                        <li><strong>NEN-EN 15221:</strong> Facility Management standaarden</li>
-                        <li><strong>NEN 2767:</strong> Conditiemeting gebouwde omgeving</li>
-                        <li><strong>NEN 2580:</strong> Oppervlakten en inhouden van gebouwen</li>
-                    </ul>
+                    <h4>Assetmanagement voor Zorgorganisaties</h4>
+                    <p style="margin-bottom: 10px; color: #2c3e50;">
+                        Deze procesplaat integreert de <strong>Asset Management cyclus</strong>, <strong>Planning & Control cyclus</strong> en de <strong>Beleidsachtbaan</strong> (7 fases)
+                        voor strategische vastgoedsturing in zorgorganisaties met grote vastgoedportefeuilles.
+                    </p>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 15px;">
+                        <div>
+                            <strong style="color: #1976D2;">NEN Normen:</strong>
+                            <ul style="margin-top: 5px; margin-left: 20px; font-size: 0.9em;">
+                                <li>NEN-ISO 55000 (Asset Management)</li>
+                                <li>NEN-EN 15221 (Facility Management)</li>
+                                <li>NEN 2767 (Conditiemeting)</li>
+                                <li>NEN 2580 (Oppervlakten)</li>
+                            </ul>
+                        </div>
+                        <div>
+                            <strong style="color: #1976D2;">Data in model:</strong>
+                            <ul style="margin-top: 5px; margin-left: 20px; font-size: 0.9em;" id="dataStats">
+                                <li>Laden...</li>
+                            </ul>
+                        </div>
+                    </div>
                 </div>
 
                 <div class="breadcrumb" id="breadcrumb"></div>
@@ -715,48 +731,178 @@
                     ]
                 }
             ],
-            events: [
+            // Beleidsachtbaan fases (7)
+            beleidsachtbaan: [
+                '1. Ondernemingsdoelstelling formuleren',
+                '2. Strategisch beleid bepalen',
+                '3. Strategie op locatieniveau invulling geven',
+                '4. Jaarplan opstellen',
+                '5. Jaarplan uitvoeren',
+                '6. Monitoring via o.a. Q-rapportage',
+                '7. Evalueren strategie'
+            ],
+
+            // P&C-cyclus fases
+            pcCyclus: [
+                '1. Strategie & Beleid',
+                '2. Begroting & Planning',
+                '3. Uitvoering & Realisatie',
+                '4. Monitoring & Rapportage',
+                '5. Evaluatie & Bijsturing'
+            ],
+
+            // Uitgebreide events per categorie
+            eventCategories: [
                 {
-                    id: 'evt-1',
-                    title: 'Jaarlijkse Portfolioreview',
-                    description: 'Evaluatie van vastgoedportfolio en strategische herijking',
-                    relatedProcesses: ['stra', 'me'],
-                    frequency: 'Jaarlijks'
+                    id: 'cat-1',
+                    name: 'Begroting & Forecasting',
+                    color: '#667eea',
+                    events: [
+                        { title: 'Vastgoedlasten in jaarbegroting exploitatie', amCyclus: 'Plan', pcCyclus: '2. Begroting & Planning', beleidsachtbaan: '4. Jaarplan opstellen', toelichting: 'Huur, afschrijvingen, onderhoud, energie, verzekeringen, OZB, belastingen', relatedProcesses: ['tac', 'opr'] },
+                        { title: 'Vastgoedinput meerjarenbegroting (3-5 jaar)', amCyclus: 'Plan / Strategie', pcCyclus: '2. Begroting & Planning', beleidsachtbaan: '2. Strategisch beleid bepalen', toelichting: 'MJOP-dotaties, investeringsfasering, vervangingsinvesteringen, portefeuillestrategie', relatedProcesses: ['stra', 'tac'] },
+                        { title: 'Actualisatie vastgoedlasten rolling forecast', amCyclus: 'Evaluatie', pcCyclus: '4. Monitoring & Rapportage', beleidsachtbaan: '6. Monitoring via Q-rapportage', toelichting: 'Bijstelling leegstand, energieprijzen, onderhoud, inflatie, prijsindexaties', relatedProcesses: ['me', 'tac'] },
+                        { title: 'Vastgoedmutaties in begrotingswijzigingen', amCyclus: 'Evaluatie / Plan', pcCyclus: '5. Evaluatie & Bijsturing', beleidsachtbaan: '7. Evalueren strategie', toelichting: 'Aankopen, verkopen, onverwachte renovaties, calamiteiten', relatedProcesses: ['stra', 'me'] },
+                        { title: 'Ruimtebehoefte in formatie- & capaciteitsplanning', amCyclus: 'Strategie / Plan', pcCyclus: '1. Strategie & Beleid', beleidsachtbaan: '1. Ondernemingsdoelstelling formuleren', toelichting: 'Relatie m² – bezetting – zorgconcept – FTE per m² – ruimtenormen', relatedProcesses: ['stra'] },
+                        { title: 'Vastgoedscenario\'s voor bestuur', amCyclus: 'Strategie', pcCyclus: '1. Strategie & Beleid', beleidsachtbaan: '2. Strategisch beleid bepalen', toelichting: 'Vastgoed als kostendrijver, flexibiliteit, business cases alternatieve huisvesting', relatedProcesses: ['stra'] },
+                        { title: 'Budget technische dienst & facilitair', amCyclus: 'Plan / Beheer', pcCyclus: '2. Begroting & Planning', beleidsachtbaan: '4. Jaarplan opstellen', toelichting: 'Interne uren, kleine reparaties, calamiteitenbudget, dagelijks beheer', relatedProcesses: ['opr'] },
+                        { title: 'Benchmark vastgoedkostprijzen', amCyclus: 'Evaluatie', pcCyclus: '5. Evaluatie & Bijsturing', beleidsachtbaan: '7. Evalueren strategie', toelichting: 'm²-prijs per functie, energiekosten per m², NVZ/Aedes benchmark', relatedProcesses: ['me'] },
+                        { title: 'Inflatiecorrectie vastgoedposten', amCyclus: 'Plan', pcCyclus: '2. Begroting & Planning', beleidsachtbaan: '4. Jaarplan opstellen', toelichting: 'Bouwkostenindex, energieprijzen, loonkosten onderhoud, huurindexatie', relatedProcesses: ['tac', 'opr'] },
+                        { title: 'Doorbelasting vastgoedkosten naar afdelingen', amCyclus: 'Beheer', pcCyclus: '3. Uitvoering & Realisatie', beleidsachtbaan: '5. Jaarplan uitvoeren', toelichting: 'Verdeelsleutels (m², FTE, kostprijs), transparantie kostenplaatsen', relatedProcesses: ['uit'] },
+                        { title: 'Efficiency-doelstellingen vastgoed', amCyclus: 'Strategie / Evaluatie', pcCyclus: '1. Strategie & Beleid', beleidsachtbaan: '1. Ondernemingsdoelstelling formuleren', toelichting: 'm² per cliënt, leegstandsreductie, energiebesparing, kostenbeheersing', relatedProcesses: ['stra', 'me'] }
+                    ]
                 },
                 {
-                    id: 'evt-2',
-                    title: 'Conditiemeting Cyclus',
-                    description: 'Periodieke inspectie volgens NEN 2767',
-                    relatedProcesses: ['tac', 'me'],
-                    frequency: 'Om de 3 jaar'
+                    id: 'cat-2',
+                    name: 'Investeringen & Desinvesteringen',
+                    color: '#764ba2',
+                    events: [
+                        { title: 'Opstellen meerjarig investeringsplan vastgoed', amCyclus: 'Strategie / Plan', pcCyclus: '1. Strategie & Beleid', beleidsachtbaan: '2. Strategisch beleid bepalen', toelichting: 'Nieuwbouw, renovatie, herontwikkeling, uitbreiding capaciteit', relatedProcesses: ['stra'] },
+                        { title: 'Businesscases vastgoedinvesteringen', amCyclus: 'Plan', pcCyclus: '2. Begroting & Planning', beleidsachtbaan: '3. Strategie op locatieniveau invulling geven', toelichting: 'Stichtingskosten, exploitatie-impact, kasstromen, ROI, terugverdientijd', relatedProcesses: ['stra', 'tac'] },
+                        { title: 'Autorisatie investeringsvoorstellen', amCyclus: 'Plan', pcCyclus: '2. Begroting & Planning', beleidsachtbaan: '2. Strategisch beleid bepalen', toelichting: 'Beleidskaders, normeringen, beslismomenten RvB/RvT', relatedProcesses: ['stra'] },
+                        { title: 'Uitvoeringsplanning goedgekeurde investeringen', amCyclus: 'Plan / Realisatie', pcCyclus: '3. Uitvoering & Realisatie', beleidsachtbaan: '4. Jaarplan opstellen', toelichting: 'Faseringen, liquiditeitsbehoefte, beschikbaarheid financiering', relatedProcesses: ['opr', 'uit'] },
+                        { title: 'Desinvesteringen / verkoop vastgoed', amCyclus: 'Strategie', pcCyclus: '1. Strategie & Beleid', beleidsachtbaan: '2. Strategisch beleid bepalen', toelichting: 'Boekwaarde, marktwaarde, restwaarde, resultaat op verkoop', relatedProcesses: ['stra'] },
+                        { title: 'Activerings- en afschrijvingsbeleid', amCyclus: 'Beheer', pcCyclus: '4. Monitoring & Rapportage', beleidsachtbaan: '5. Jaarplan uitvoeren', toelichting: 'Levensduur componenten, activeringsgrenzen, componentbenadering', relatedProcesses: ['me'] },
+                        { title: 'Actualisatie investeringsagenda', amCyclus: 'Plan / Evaluatie', pcCyclus: '5. Evaluatie & Bijsturing', beleidsachtbaan: '7. Evalueren strategie', toelichting: 'Herprioritering o.b.v. conditie, urgentie, strategie, financiële ruimte', relatedProcesses: ['stra', 'me'] },
+                        { title: 'Aanbesteding & contractering nieuwbouw/renovatie', amCyclus: 'Realisatie', pcCyclus: '3. Uitvoering & Realisatie', beleidsachtbaan: '5. Jaarplan uitvoeren', toelichting: 'Offertetraject, bouwrisico\'s, prijsgaranties, planning', relatedProcesses: ['uit'] },
+                        { title: 'Oplevering en ingebruikname projecten', amCyclus: 'Realisatie / Beheer', pcCyclus: '3. Uitvoering & Realisatie', beleidsachtbaan: '5. Jaarplan uitvoeren', toelichting: 'Overdracht naar beheer, garanties, evaluatie projectresultaat', relatedProcesses: ['uit'] },
+                        { title: 'Herfinanciering vastgoedinvesteringen', amCyclus: 'Plan', pcCyclus: '2. Begroting & Planning', beleidsachtbaan: '2. Strategisch beleid bepalen', toelichting: 'Renteherziening, herstructurering leningen, WNT-toets', relatedProcesses: ['stra', 'tac'] }
+                    ]
                 },
                 {
-                    id: 'evt-3',
-                    title: 'Budget Planning',
-                    description: 'Jaarlijkse vaststelling onderhoudsbudget',
-                    relatedProcesses: ['tac', 'opr'],
-                    frequency: 'Jaarlijks (Q4)'
+                    id: 'cat-3',
+                    name: 'Onderhoud & MJOP',
+                    color: '#f093fb',
+                    events: [
+                        { title: 'Opstellen/actualiseren Meerjarenonderhoudsplan (MJOP)', amCyclus: 'Plan', pcCyclus: '2. Begroting & Planning', beleidsachtbaan: '3. Strategie op locatieniveau invulling geven', toelichting: 'Kernproduct: planning groot onderhoud per object, kostenraming', relatedProcesses: ['tac'] },
+                        { title: 'Jaarlijks onderhoudsplan en -begroting', amCyclus: 'Plan', pcCyclus: '2. Begroting & Planning', beleidsachtbaan: '4. Jaarplan opstellen', toelichting: 'Vertaling MJOP naar uitvoering komend jaar, prioritering', relatedProcesses: ['tac', 'opr'] },
+                        { title: 'Uitvoering groot onderhoud / renovaties', amCyclus: 'Realisatie', pcCyclus: '3. Uitvoering & Realisatie', beleidsachtbaan: '5. Jaarplan uitvoeren', toelichting: 'Investering vs. exploitatie, impact op beschikbaarheid', relatedProcesses: ['uit'] },
+                        { title: 'Correctief/storingsonderhoud registratie', amCyclus: 'Beheer / Evaluatie', pcCyclus: '4. Monitoring & Rapportage', beleidsachtbaan: '6. Monitoring via Q-rapportage', toelichting: 'Trendanalyse storingen, hotspots, kwaliteitsindicatie', relatedProcesses: ['uit', 'me'] },
+                        { title: 'Dotatie onderhoudsvoorziening (jaarrekening)', amCyclus: 'Plan / Evaluatie', pcCyclus: '4. Monitoring & Rapportage', beleidsachtbaan: '3. Strategie op locatieniveau invulling geven', toelichting: 'Berekening o.b.v. MJOP, WNT-toets, voldoende dekking', relatedProcesses: ['tac', 'me'] },
+                        { title: 'Actualisatie onderhoudsstrategie', amCyclus: 'Strategie', pcCyclus: '1. Strategie & Beleid', beleidsachtbaan: '2. Strategisch beleid bepalen', toelichting: 'Preventief vs. correctief, life cycle costing, total cost of ownership', relatedProcesses: ['stra'] },
+                        { title: 'Conditiemetingen gebouwen (NEN 2767)', amCyclus: 'Evaluatie', pcCyclus: '5. Evaluatie & Bijsturing', beleidsachtbaan: '7. Evalueren strategie', toelichting: 'Objectieve staat per component, risico-inschatting, update MJOP', relatedProcesses: ['me', 'tac'] },
+                        { title: 'Onderhoudscontracten technische installaties', amCyclus: 'Beheer', pcCyclus: '3. Uitvoering & Realisatie', beleidsachtbaan: '5. Jaarplan uitvoeren', toelichting: 'Servicecontracten liften, cv, brandmeld, ventilatie, koeling', relatedProcesses: ['uit'] },
+                        { title: 'Klachtenregistratie gebouwkwaliteit', amCyclus: 'Beheer / Evaluatie', pcCyclus: '4. Monitoring & Rapportage', beleidsachtbaan: '6. Monitoring via Q-rapportage', toelichting: 'Signalen gebruikers, actieplannen, kwaliteitsverbetering', relatedProcesses: ['me'] },
+                        { title: 'Meerjarig planmatig vervangingsschema', amCyclus: 'Plan', pcCyclus: '2. Begroting & Planning', beleidsachtbaan: '3. Strategie op locatieniveau invulling geven', toelichting: 'Daken, gevels, installaties, kozijnen o.b.v. technische levensduur', relatedProcesses: ['tac'] }
+                    ]
                 },
                 {
-                    id: 'evt-4',
-                    title: 'Kwartaal Evaluatie',
-                    description: 'Review van uitgevoerd onderhoud en kosten',
-                    relatedProcesses: ['uit', 'me'],
-                    frequency: 'Kwartaal'
+                    id: 'cat-4',
+                    name: 'Vastgoedexploitatie & Verhuur',
+                    color: '#4facfe',
+                    events: [
+                        { title: 'Leegstandsmonitoring en -rapportage', amCyclus: 'Evaluatie', pcCyclus: '4. Monitoring & Rapportage', beleidsachtbaan: '6. Monitoring via Q-rapportage', toelichting: 'm² leegstand, financiële impact, oorzaken, actieplan', relatedProcesses: ['me'] },
+                        { title: 'Interne verhuur aan zorgafdelingen', amCyclus: 'Beheer', pcCyclus: '3. Uitvoering & Realisatie', beleidsachtbaan: '5. Jaarplan uitvoeren', toelichting: 'Kostentoerekening, transparantie, verdeelsleutels', relatedProcesses: ['uit'] },
+                        { title: 'Externe verhuur derden', amCyclus: 'Beheer', pcCyclus: '3. Uitvoering & Realisatie', beleidsachtbaan: '5. Jaarplan uitvoeren', toelichting: 'Huurcontracten, indexatie, marktconformiteit, nevenactiviteiten', relatedProcesses: ['uit'] },
+                        { title: 'Indexatie huurportefeuille', amCyclus: 'Beheer', pcCyclus: '3. Uitvoering & Realisatie', beleidsachtbaan: '5. Jaarplan uitvoeren', toelichting: 'CPI/IGC-indexering, contractvoorwaarden, moment van doorvoering', relatedProcesses: ['uit'] },
+                        { title: 'Doorbelasting servicekosten huurders', amCyclus: 'Beheer', pcCyclus: '3. Uitvoering & Realisatie', beleidsachtbaan: '5. Jaarplan uitvoeren', toelichting: 'Energie, schoonmaak, onderhoud, BIK-correctie', relatedProcesses: ['uit'] },
+                        { title: 'Bepaling interne huurprijzen/kostprijzen', amCyclus: 'Strategie / Plan', pcCyclus: '1. Strategie & Beleid', beleidsachtbaan: '2. Strategisch beleid bepalen', toelichting: 'Marktwaarde, kostprijs, of normbedragen per m²', relatedProcesses: ['stra', 'tac'] }
+                    ]
                 },
                 {
-                    id: 'evt-5',
-                    title: 'Duurzaamheid Scan',
-                    description: 'Evaluatie energieprestatie en verduurzamingskansen',
-                    relatedProcesses: ['stra', 'tac'],
-                    frequency: 'Jaarlijks'
+                    id: 'cat-5',
+                    name: 'Contractmanagement',
+                    color: '#00f2fe',
+                    events: [
+                        { title: 'Aanbesteding onderhoudscontracten', amCyclus: 'Plan', pcCyclus: '2. Begroting & Planning', beleidsachtbaan: '4. Jaarplan opstellen', toelichting: 'Europese aanbesteding, gunning, contractvoorwaarden', relatedProcesses: ['opr'] },
+                        { title: 'Indexatie bestaande contracten', amCyclus: 'Beheer', pcCyclus: '3. Uitvoering & Realisatie', beleidsachtbaan: '5. Jaarplan uitvoeren', toelichting: 'Loon-, prijs- en materiaalindexen, contractuele voorwaarden', relatedProcesses: ['uit'] },
+                        { title: 'Contractverlengingen en -evaluaties', amCyclus: 'Evaluatie / Plan', pcCyclus: '5. Evaluatie & Bijsturing', beleidsachtbaan: '7. Evalueren strategie', toelichting: 'Prestaties, prijs-kwaliteit, voortzetting vs. heraanbesteding', relatedProcesses: ['me', 'opr'] }
+                    ]
                 },
                 {
-                    id: 'evt-6',
-                    title: 'Leveranciers Review',
-                    description: 'Evaluatie van contracten en leveranciersprestaties',
-                    relatedProcesses: ['opr', 'me'],
-                    frequency: 'Jaarlijks'
+                    id: 'cat-6',
+                    name: 'Energie & Duurzaamheid',
+                    color: '#28a745',
+                    events: [
+                        { title: 'Energieverbruik monitoring', amCyclus: 'Evaluatie', pcCyclus: '4. Monitoring & Rapportage', beleidsachtbaan: '6. Monitoring via Q-rapportage', toelichting: 'Gas, elektriciteit, warmte per m², kosten, CO₂-voetafdruk', relatedProcesses: ['me'] },
+                        { title: 'Verduurzamingsprojecten', amCyclus: 'Plan / Realisatie', pcCyclus: '2. Begroting & Planning', beleidsachtbaan: '3. Strategie op locatieniveau invulling geven', toelichting: 'Isolatie, zonnepanelen, warmtepompen, subsidies', relatedProcesses: ['tac', 'uit'] },
+                        { title: 'ESG-rapportage en CSRD-compliance', amCyclus: 'Evaluatie', pcCyclus: '4. Monitoring & Rapportage', beleidsachtbaan: '6. Monitoring via Q-rapportage', toelichting: 'Scope 1/2/3 emissies, dataleverantie vanuit vastgoed', relatedProcesses: ['me', 'stra'] },
+                        { title: 'CO₂-reductiedoelstellingen', amCyclus: 'Strategie', pcCyclus: '1. Strategie & Beleid', beleidsachtbaan: '1. Ondernemingsdoelstelling formuleren', toelichting: 'Doelen klimaatakkoord, sectorafspraken, transitiepad', relatedProcesses: ['stra'] }
+                    ]
+                },
+                {
+                    id: 'cat-7',
+                    name: 'Risico & Compliance',
+                    color: '#dc3545',
+                    events: [
+                        { title: 'Gebouwenlijst voor verzekeraar', amCyclus: 'Beheer', pcCyclus: '3. Uitvoering & Realisatie', beleidsachtbaan: '5. Jaarplan uitvoeren', toelichting: 'Adressen, verzekerde waarden, functies, m², bouwjaar', relatedProcesses: ['uit'] },
+                        { title: 'Conditiemetingen (NEN 2767)', amCyclus: 'Evaluatie', pcCyclus: '5. Evaluatie & Bijsturing', beleidsachtbaan: '7. Evalueren strategie', toelichting: 'Objectieve staat, risico-inventarisatie, prioritering MJOP', relatedProcesses: ['me', 'tac'] },
+                        { title: 'Verplichte taxaties (WFZ/CRR)', amCyclus: 'Evaluatie', pcCyclus: '4. Monitoring & Rapportage', beleidsachtbaan: '6. Monitoring via Q-rapportage', toelichting: 'Marktwaarde, bedrijfswaarde, frequentie volgens richtlijnen', relatedProcesses: ['me'] },
+                        { title: 'Inspecties en keuringen', amCyclus: 'Beheer', pcCyclus: '3. Uitvoering & Realisatie', beleidsachtbaan: '5. Jaarplan uitvoeren', toelichting: 'Liften, brandmeld, legionella - wettelijke compliance', relatedProcesses: ['uit'] }
+                    ]
+                },
+                {
+                    id: 'cat-8',
+                    name: 'Mutaties & Operationeel',
+                    color: '#fd7e14',
+                    events: [
+                        { title: 'Storingen & meldingen onderhoud', amCyclus: 'Beheer', pcCyclus: '4. Monitoring & Rapportage', beleidsachtbaan: '6. Monitoring via Q-rapportage', toelichting: 'Trendinformatie, hotspots, gebruikerstevredenheid', relatedProcesses: ['uit', 'me'] },
+                        { title: 'Calamiteiten (brand, storm, lekkage)', amCyclus: 'Beheer', pcCyclus: '3. Uitvoering & Realisatie', beleidsachtbaan: '5. Jaarplan uitvoeren', toelichting: 'Impactanalyse, herstelkosten, continuïteit zorgverlening', relatedProcesses: ['uit'] },
+                        { title: 'Functiewijzigingen gebouwen', amCyclus: 'Plan / Beheer', pcCyclus: '2. Begroting & Planning', beleidsachtbaan: '3. Strategie op locatieniveau invulling geven', toelichting: 'Bestemming, verzekering, vergunningen, aanpassingen', relatedProcesses: ['tac', 'opr'] }
+                    ]
+                },
+                {
+                    id: 'cat-9',
+                    name: 'Strategie & Beleid',
+                    color: '#6f42c1',
+                    events: [
+                        { title: 'Strategisch vastgoedplan (5-10 jaar)', amCyclus: 'Strategie', pcCyclus: '1. Strategie & Beleid', beleidsachtbaan: '1. Ondernemingsdoelstelling formuleren', toelichting: 'Kernrol assetmanagement, visie, ambities', relatedProcesses: ['stra'] },
+                        { title: 'Actualisatie vastgoedstrategie', amCyclus: 'Strategie', pcCyclus: '1. Strategie & Beleid', beleidsachtbaan: '2. Strategisch beleid bepalen', toelichting: 'Markt, zorgontwikkeling, demografische trends', relatedProcesses: ['stra'] },
+                        { title: 'Portefeuillestrategie (behouden/investeren/afstoten)', amCyclus: 'Strategie', pcCyclus: '1. Strategie & Beleid', beleidsachtbaan: '2. Strategisch beleid bepalen', toelichting: 'Strategische fit, financiële prestatie, marktpositie', relatedProcesses: ['stra'] },
+                        { title: 'Duurzaamheidsambities en -doelen', amCyclus: 'Strategie', pcCyclus: '1. Strategie & Beleid', beleidsachtbaan: '1. Ondernemingsdoelstelling formuleren', toelichting: 'CO₂-neutraal, energielabels, circulariteit, klimaatadaptatie', relatedProcesses: ['stra'] }
+                    ]
+                },
+                {
+                    id: 'cat-10',
+                    name: 'Jaarrekening & Verantwoording',
+                    color: '#20c997',
+                    events: [
+                        { title: 'Jaarrekening materiële vaste activa', amCyclus: 'Evaluatie', pcCyclus: '4. Monitoring & Rapportage', beleidsachtbaan: '7. Evalueren strategie', toelichting: 'Afschrijvingen, boekwaarden, investeringen', relatedProcesses: ['me'] },
+                        { title: 'Actualisatie onderhoudsvoorziening', amCyclus: 'Evaluatie', pcCyclus: '4. Monitoring & Rapportage', beleidsachtbaan: '6. Monitoring via Q-rapportage', toelichting: 'MJOP ↔ boekhouding, dotatie, onttrekking', relatedProcesses: ['me', 'tac'] },
+                        { title: 'Waardering vastgoed (impairment)', amCyclus: 'Evaluatie', pcCyclus: '5. Evaluatie & Bijsturing', beleidsachtbaan: '7. Evalueren strategie', toelichting: 'Boekwaarde vs. marktwaarde, bijzondere waardevermindering', relatedProcesses: ['me', 'stra'] },
+                        { title: 'Controle accountant vastgoedposities', amCyclus: 'Evaluatie', pcCyclus: '4. Monitoring & Rapportage', beleidsachtbaan: '7. Evalueren strategie', toelichting: 'Onderbouwing aannames, MJOP-kwaliteit, voorzieningen', relatedProcesses: ['me'] }
+                    ]
+                },
+                {
+                    id: 'cat-11',
+                    name: 'Data & Informatievoorziening',
+                    color: '#17a2b8',
+                    events: [
+                        { title: 'Actualisatie vastgoedadministratie (VGAM)', amCyclus: 'Beheer', pcCyclus: '3. Uitvoering & Realisatie', beleidsachtbaan: '5. Jaarplan uitvoeren', toelichting: 'BAG, NEN 2580, objectgegevens, mutatieregistratie', relatedProcesses: ['uit'] },
+                        { title: 'KPI-rapportages vastgoed', amCyclus: 'Evaluatie', pcCyclus: '4. Monitoring & Rapportage', beleidsachtbaan: '6. Monitoring via Q-rapportage', toelichting: 'Financiële ratio\'s, technische KPI\'s, benchmarking', relatedProcesses: ['me'] },
+                        { title: 'Dashboard vastgoedprestaties', amCyclus: 'Evaluatie', pcCyclus: '4. Monitoring & Rapportage', beleidsachtbaan: '6. Monitoring via Q-rapportage', toelichting: 'Real-time inzicht kosten, leegstand, onderhoud', relatedProcesses: ['me'] },
+                        { title: 'Rapportage aan RvB en RvT', amCyclus: 'Evaluatie', pcCyclus: '4. Monitoring & Rapportage', beleidsachtbaan: '7. Evalueren strategie', toelichting: 'Strategische informatie, risico\'s, financiën', relatedProcesses: ['me', 'stra'] }
+                    ]
+                },
+                {
+                    id: 'cat-12',
+                    name: 'Wettelijke Verplichtingen',
+                    color: '#6c757d',
+                    events: [
+                        { title: 'Bouwvergunningen en omgevingsvergunningen', amCyclus: 'Realisatie', pcCyclus: '3. Uitvoering & Realisatie', beleidsachtbaan: '5. Jaarplan uitvoeren', toelichting: 'Procedures, voorwaarden, overleg gemeente', relatedProcesses: ['uit'] },
+                        { title: 'Brandveiligheidsvoorschriften', amCyclus: 'Beheer', pcCyclus: '3. Uitvoering & Realisatie', beleidsachtbaan: '5. Jaarplan uitvoeren', toelichting: 'Bouwbesluit, gebruiksvergunning, inspecties', relatedProcesses: ['uit'] },
+                        { title: 'Legionellabeheersplan en -metingen', amCyclus: 'Beheer', pcCyclus: '3. Uitvoering & Realisatie', beleidsachtbaan: '5. Jaarplan uitvoeren', toelichting: 'Wettelijke verplichting, risicoanalyse, beheersmaatregelen', relatedProcesses: ['uit'] },
+                        { title: 'Rapportage IGJ en NZA', amCyclus: 'Evaluatie', pcCyclus: '4. Monitoring & Rapportage', beleidsachtbaan: '7. Evalueren strategie', toelichting: 'Kwaliteitsgegevens, veiligheid, normering', relatedProcesses: ['me'] }
+                    ]
                 }
             ]
         };
@@ -774,7 +920,32 @@
             updateBreadcrumb();
             renderEvents();
             populateParentSelect();
+            updateDataStats();
+            updateEventButton();
         });
+
+        // Update data statistics
+        function updateDataStats() {
+            const statsEl = document.getElementById('dataStats');
+            if (statsEl) {
+                const totalEvents = getTotalEventCount();
+                statsEl.innerHTML = `
+                    <li>5 Hoofdprocessen</li>
+                    <li>20 Subprocessen</li>
+                    <li>${processData.eventCategories.length} Event Categorieën</li>
+                    <li><strong>${totalEvents}</strong> Events totaal</li>
+                `;
+            }
+        }
+
+        // Update event button with count
+        function updateEventButton() {
+            const btn = document.getElementById('eventsBtn');
+            if (btn) {
+                const total = getTotalEventCount();
+                btn.textContent = `📅 Events (${total})`;
+            }
+        }
 
         // Render hoofdprocessen
         function renderMainProcesses() {
@@ -872,10 +1043,22 @@
             const eventsList = document.getElementById('eventsList');
             eventsList.innerHTML = '';
 
-            let eventsToShow = processData.events;
+            // Collect all events from all categories
+            let allEvents = [];
+            processData.eventCategories.forEach(category => {
+                category.events.forEach(event => {
+                    allEvents.push({
+                        ...event,
+                        category: category.name,
+                        categoryColor: category.color
+                    });
+                });
+            });
+
+            let eventsToShow = allEvents;
             if (filter) {
-                eventsToShow = processData.events.filter(e =>
-                    e.relatedProcesses.includes(filter)
+                eventsToShow = allEvents.filter(e =>
+                    e.relatedProcesses && e.relatedProcesses.includes(filter)
                 );
             }
 
@@ -884,16 +1067,59 @@
                 return;
             }
 
+            // Group by category
+            const grouped = {};
             eventsToShow.forEach(event => {
-                const eventItem = document.createElement('div');
-                eventItem.className = 'event-item';
-                eventItem.innerHTML = `
-                    <div class="event-title">${event.title}</div>
-                    <div class="event-desc">${event.description}</div>
-                    <small style="color: #667eea; font-weight: 600;">${event.frequency}</small>
-                `;
-                eventsList.appendChild(eventItem);
+                if (!grouped[event.category]) {
+                    grouped[event.category] = [];
+                }
+                grouped[event.category].push(event);
             });
+
+            // Render by category
+            Object.keys(grouped).forEach(categoryName => {
+                const categoryHeader = document.createElement('div');
+                categoryHeader.style.cssText = 'font-weight: 700; color: #2c3e50; margin-top: 15px; margin-bottom: 8px; font-size: 0.9em; text-transform: uppercase;';
+                categoryHeader.textContent = categoryName;
+                eventsList.appendChild(categoryHeader);
+
+                grouped[categoryName].forEach(event => {
+                    const eventItem = document.createElement('div');
+                    eventItem.className = 'event-item';
+                    eventItem.style.borderLeftColor = event.categoryColor;
+                    eventItem.innerHTML = `
+                        <div class="event-title">${event.title}</div>
+                        <div class="event-desc">${event.toelichting}</div>
+                        <small style="color: ${event.categoryColor}; font-weight: 600; display: block; margin-top: 5px;">
+                            AM: ${event.amCyclus} | P&C: ${event.pcCyclus}
+                        </small>
+                        <small style="color: #6c757d; font-size: 0.8em; display: block; margin-top: 3px;">
+                            ${event.beleidsachtbaan}
+                        </small>
+                    `;
+                    eventItem.onclick = () => showEventDetails(event);
+                    eventsList.appendChild(eventItem);
+                });
+            });
+        }
+
+        // Show event details
+        function showEventDetails(event) {
+            const details = `
+Event Details:
+
+${event.title}
+
+Categorie: ${event.category}
+
+Assetmanagement Cyclus: ${event.amCyclus}
+Planning & Control Cyclus: ${event.pcCyclus}
+Beleidsachtbaan Fase: ${event.beleidsachtbaan}
+
+Toelichting:
+${event.toelichting}
+            `.trim();
+            alert(details);
         }
 
         // Update events voor specifiek proces
@@ -901,10 +1127,106 @@
             renderEvents(processId);
         }
 
-        // Toon event overzicht
+        // Toon event overzicht - open events in modal
         function showEventsOverview() {
-            alert('Event Overzicht:\n\n' +
-                processData.events.map(e => `${e.title} (${e.frequency})`).join('\n'));
+            // Create modal for events overview
+            const modal = document.createElement('div');
+            modal.className = 'modal active';
+            modal.innerHTML = `
+                <div class="modal-content" style="max-width: 900px;">
+                    <h2>Volledige Event Overzicht</h2>
+                    <p style="color: #6c757d; margin-bottom: 20px;">
+                        <strong>${getTotalEventCount()}</strong> events verdeeld over <strong>${processData.eventCategories.length}</strong> categorieën
+                    </p>
+                    <div id="categoriesOverview"></div>
+                    <div class="modal-actions">
+                        <button type="button" class="btn btn-primary" onclick="this.closest('.modal').remove()">Sluiten</button>
+                    </div>
+                </div>
+            `;
+
+            document.body.appendChild(modal);
+
+            // Render categories
+            const container = modal.querySelector('#categoriesOverview');
+            processData.eventCategories.forEach(category => {
+                const categoryDiv = document.createElement('div');
+                categoryDiv.style.cssText = 'margin-bottom: 25px; border-left: 4px solid ' + category.color + '; padding-left: 15px;';
+                categoryDiv.innerHTML = `
+                    <h3 style="color: ${category.color}; margin-bottom: 10px;">${category.name} (${category.events.length})</h3>
+                    <ul style="margin: 0; padding-left: 20px;">
+                        ${category.events.map(e => `<li style="margin-bottom: 5px; color: #2c3e50;">${e.title}</li>`).join('')}
+                    </ul>
+                `;
+                container.appendChild(categoryDiv);
+            });
+
+            modal.onclick = (e) => {
+                if (e.target === modal) modal.remove();
+            };
+        }
+
+        function getTotalEventCount() {
+            let total = 0;
+            processData.eventCategories.forEach(cat => {
+                total += cat.events.length;
+            });
+            return total;
+        }
+
+        // Show Beleidsachtbaan modal
+        function showBeleidsachtbaan() {
+            const modal = document.createElement('div');
+            modal.className = 'modal active';
+            modal.innerHTML = `
+                <div class="modal-content" style="max-width: 800px;">
+                    <h2>Beleidsachtbaan - 7 Fases</h2>
+                    <p style="color: #6c757d; margin-bottom: 20px;">
+                        De beleidsachtbaan beschrijft de 7 fases in het vastgoedsturingsproces van ondernemingsdoelstelling tot evaluatie.
+                    </p>
+                    <div style="display: flex; flex-direction: column; gap: 15px;">
+                        ${processData.beleidsachtbaan.map((fase, index) => `
+                            <div style="background: ${getPhaseColor(index)}; padding: 20px; border-radius: 10px; color: white; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                                <h3 style="color: white; margin-bottom: 8px;">${fase}</h3>
+                                <p style="opacity: 0.9; font-size: 0.9em;">${getPhaseDescription(index)}</p>
+                            </div>
+                        `).join('')}
+                    </div>
+                    <div style="margin-top: 20px; padding: 15px; background: #e7f3ff; border-radius: 8px;">
+                        <h4 style="color: #1976D2; margin-bottom: 10px;">P&C-cyclus fases:</h4>
+                        <ul style="margin: 0; padding-left: 20px; color: #2c3e50;">
+                            ${processData.pcCyclus.map(fase => `<li style="margin-bottom: 5px;">${fase}</li>`).join('')}
+                        </ul>
+                    </div>
+                    <div class="modal-actions">
+                        <button type="button" class="btn btn-primary" onclick="this.closest('.modal').remove()">Sluiten</button>
+                    </div>
+                </div>
+            `;
+
+            document.body.appendChild(modal);
+
+            modal.onclick = (e) => {
+                if (e.target === modal) modal.remove();
+            };
+        }
+
+        function getPhaseColor(index) {
+            const colors = ['#667eea', '#764ba2', '#f093fb', '#4facfe', '#00f2fe', '#28a745', '#dc3545'];
+            return colors[index] || '#667eea';
+        }
+
+        function getPhaseDescription(index) {
+            const descriptions = [
+                'Vaststellen van de organisatiedoelen en vertaling naar vastgoedambitie',
+                'Bepalen van strategische keuzes en lange termijn vastgoedvisie',
+                'Concretiseren van strategie naar specifieke locaties en objecten',
+                'Uitwerken van concrete jaarlijkse activiteiten en budgetten',
+                'Realiseren van geplande activiteiten en projecten',
+                'Monitoren van voortgang en resultaten via rapportages',
+                'Evalueren van behaalde resultaten en bijstellen van strategie'
+            ];
+            return descriptions[index] || '';
         }
 
         // Toon proces details
