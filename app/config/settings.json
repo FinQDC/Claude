@@ -1,0 +1,13 @@
+{
+  "column_mapping": {
+    "datum": "Datum",
+    "omschrijving": "Omschrijving",
+    "bedrag": "Bedrag",
+    "tegenrekening": "Tegenrekening",
+    "categorie_bank": "Categorie"
+  },
+  "date_format": "%Y-%m-%d",
+  "decimal_separator": ",",
+  "thousands_separator": ".",
+  "default_category": "Onbekend"
+}

@@ -1,0 +1,39 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+env/
+ENV/
+.venv/
+
+# Streamlit
+.streamlit/
+
+# Data files - BELANGRIJK: bescherm privacy
+app/data/*.csv
+app/data/*.xlsx
+app/data/*.xls
+
+# Maar behoud de data directory zelf
+!app/data/.gitkeep
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Persoonlijke configuratie (optioneel - verwijder deze regels als je settings wil delen)
+# app/config/settings.json
+# app/config/categorie_regels.csv
