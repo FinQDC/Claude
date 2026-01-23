@@ -24,7 +24,41 @@ Al je transactiegegevens blijven veilig op jouw eigen computer.
 
 ---
 
-## 📦 Installatie
+## ⚡ Snelstart (Automatische Installatie)
+
+**Nieuw!** Gebruik de automatische installatiescripts voor de snelste setup:
+
+### Windows
+
+1. Download deze repository en pak uit
+2. **Dubbelklik op `setup.bat`**
+3. Het script installeert automatisch:
+   - Python (indien nodig)
+   - Virtuele omgeving
+   - Alle benodigde packages
+4. Klaar! Start de app met **`start.bat`**
+
+### macOS / Linux
+
+1. Download deze repository en pak uit
+2. Open Terminal in de uitgepakte map
+3. Voer uit:
+   ```bash
+   chmod +x setup.sh
+   ./setup.sh
+   ```
+4. Klaar! Start de app met:
+   ```bash
+   ./start.sh
+   ```
+
+**Dat is alles!** De scripts zorgen voor de complete installatie.
+
+---
+
+## 📦 Installatie (Handmatig)
+
+_Wil je liever handmatig installeren? Volg deze stappen:_
 
 ### Stap 1: Python Installeren
 
@@ -83,6 +117,13 @@ Dit installeert alle benodigde Python-packages (pandas, streamlit, plotly, etc.)
 
 ### Stap 5: Start de Applicatie
 
+**Optie A - Met start script (makkelijkste):**
+
+Ga terug naar de hoofdmap en gebruik:
+- **Windows**: Dubbelklik op `start.bat`
+- **macOS/Linux**: Voer uit `./start.sh`
+
+**Optie B - Handmatig:**
 ```bash
 streamlit run app.py
 ```
@@ -222,13 +263,19 @@ Elke maand:
 ## 📁 Projectstructuur
 
 ```
-app/
-├── app.py                    # Hoofdapplicatie
-├── requirements.txt          # Python dependencies
-├── config/
-│   ├── settings.json        # Instellingen (kolomnamen, formaten)
-│   └── categorie_regels.csv # Categorisatieregels
-└── data/                    # Hier worden exports opgeslagen
+/
+├── setup.bat                 # Automatische installatie (Windows)
+├── setup.sh                  # Automatische installatie (macOS/Linux)
+├── start.bat                 # Start app (Windows)
+├── start.sh                  # Start app (macOS/Linux)
+├── README.md                 # Deze handleiding
+└── app/
+    ├── app.py                # Hoofdapplicatie
+    ├── requirements.txt      # Python dependencies
+    ├── config/
+    │   ├── settings.json     # Instellingen (kolomnamen, formaten)
+    │   └── categorie_regels.csv # Categorisatieregels
+    └── data/                 # Hier worden exports opgeslagen
 ```
 
 ---
@@ -289,6 +336,11 @@ Druk in de terminal op `Ctrl+C`, of sluit gewoon de browser tab en terminal.
 
 ### Hoe herstart ik de app later?
 
+**Makkelijkste manier:**
+- **Windows**: Dubbelklik op `start.bat`
+- **macOS/Linux**: Voer uit `./start.sh`
+
+**Of handmatig:**
 1. Open terminal in de `app` map
 2. Activeer virtuele omgeving:
    - Windows: `venv\Scripts\activate`
