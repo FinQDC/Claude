@@ -21,6 +21,20 @@ Een complete banktransactie analyzer gebouwd in **Microsoft Excel** met VBA macr
 - **Macro's enabled** (wordt bij openen gevraagd)
 - Dat is alles!
 
+---
+
+## 📥 NIEUW: Download van GitHub?
+
+**👉 [Klik hier voor stap-voor-stap download instructies](DOWNLOAD_VAN_GITHUB.md)**
+
+Deze handleiding legt PRECIES uit:
+- Waar je in GitHub moet klikken
+- Hoe je de VBA bestanden download
+- Hoe je in 15 minuten een werkend Excel bestand maakt
+- Met screenshots en troubleshooting
+
+---
+
 ## ⚡ Snelstart
 
 ### Optie 1: Gebruik kant-en-klare template (Aanbevolen)
