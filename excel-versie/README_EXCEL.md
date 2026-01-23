@@ -18,12 +18,39 @@ Een complete banktransactie analyzer gebouwd in **Microsoft Excel** met VBA macr
 ## 📦 Vereisten
 
 - **Microsoft Excel 2016 of nieuwer** (Windows of Mac)
-- **Macro's enabled** (wordt bij openen gevraagd)
 - Dat is alles!
 
 ---
 
-## 📥 NIEUW: Download van GitHub?
+## 🌟 NIEUW: Super Simpele Versie (GEEN VBA!)
+
+**Wil je NIKS installeren of importeren?**
+
+### ✨ Download Direct Werkend Bestand
+
+📥 **`BankTransactieAnalyzer_FORMULES.xlsx`** ← Gewoon downloaden en openen!
+
+**👉 [Klik hier voor instructies (3 stappen!)](GEEN_INSTALLATIE_NODIG.md)**
+
+**Deze versie:**
+- ✅ GEEN VBA macro's
+- ✅ GEEN modules importeren
+- ✅ GEEN beveiligingswaarschuwingen
+- ✅ Alleen Excel formules
+- ✅ Download, open, plak CSV, klaar!
+
+**Perfect als je:**
+- Geen macro's wilt gebruiken
+- Super snel wilt starten
+- Geen technische setup wilt doen
+
+---
+
+## 🔧 Geavanceerde Versie (Met VBA)
+
+Wil je automatische import met knoppen? Gebruik de VBA versie:
+
+### 📥 Download van GitHub
 
 **👉 [Klik hier voor stap-voor-stap download instructies](DOWNLOAD_VAN_GITHUB.md)**
 
@@ -32,6 +59,10 @@ Deze handleiding legt PRECIES uit:
 - Hoe je de VBA bestanden download
 - Hoe je in 15 minuten een werkend Excel bestand maakt
 - Met screenshots en troubleshooting
+
+**VBA Versie vereist:**
+- Macro's enabled
+- VBA modules importeren (15 min)
 
 ---
 
