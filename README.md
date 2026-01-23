@@ -24,7 +24,35 @@ Al je transactiegegevens blijven veilig op jouw eigen computer.
 
 ---
 
-## ⚡ Snelstart (Automatische Installatie)
+## 🎯 Kies je Versie
+
+Deze tool is beschikbaar in **twee versies** - kies wat het beste bij je past:
+
+### 📊 Excel Versie (Nieuw!)
+**Ideaal als je Excel gewend bent en geen Python wilt installeren**
+
+- ✅ **Geen installatie nodig** (alleen Excel)
+- ✅ **Vertrouwde interface** - Werk direct in Excel
+- ✅ **VBA macro's** - Importeer met één klik
+- ✅ **PivotTables & grafieken** - Krachtige visualisaties
+- ✅ **Direct data bewerken** - Sorteer, filter in realtime
+
+👉 **[Ga naar Excel versie →](excel-versie/README_EXCEL.md)**
+
+### 🐍 Python/Streamlit Versie (Origineel)
+**Krachtigere analyses met moderne web interface**
+
+- ✅ **Automatische installatie** - Setup.bat/setup.sh
+- ✅ **Moderne UI** - Interactieve web interface
+- ✅ **Grotere datasets** - Tot 1M+ transacties
+- ✅ **Plotly grafieken** - Geavanceerde visualisaties
+- ✅ **Python scripting** - Volledig aanpasbaar
+
+👉 **Zie hieronder voor Python installatie**
+
+---
+
+## ⚡ Snelstart Python Versie (Automatische Installatie)
 
 **Nieuw!** Gebruik de automatische installatiescripts voor de snelste setup:
 
@@ -410,3 +438,49 @@ Deze app is volledig open source en lokaal. Voor vragen of problemen:
 - Pas de code aan naar jouw wensen!
 
 **Veel plezier met het analyseren van je financiën - privé en veilig!** 💰🔒
+
+---
+
+## 🆚 Python vs Excel Versie - Vergelijking
+
+Niet zeker welke versie te kiezen? Hier is een vergelijking:
+
+| Feature | 🐍 Python/Streamlit | 📊 Excel |
+|---------|---------------------|----------|
+| **Installatie** | Automatisch via script (5 min) | Alleen Excel nodig |
+| **Vereisten** | Python 3.8+ | Excel 2016+ |
+| **Interface** | Web browser (localhost) | Excel sheets |
+| **Import** | Upload in browser | VBA macro knop |
+| **Categorisatie** | Automatisch via UI | Automatisch via VBA |
+| **Visualisatie** | Plotly interactieve grafieken | PivotTables & Excel grafieken |
+| **Data manipulatie** | Via interface filters | Direct in cells |
+| **Performance** | Tot 1M+ transacties | Tot 50k transacties |
+| **Aanpassen** | Python code | VBA code + formules |
+| **Export** | Excel/CSV download | Excel/CSV save |
+| **Updates** | Herstart Streamlit | Heranalyse macro |
+| **Portabiliteit** | Requires Python install | Alleen .xlsm bestand |
+| **Platform** | Windows/Mac/Linux | Windows/Mac (Excel) |
+
+### Kies Python/Streamlit als:
+- ✅ Je moderne, interactieve interface wilt
+- ✅ Je grote datasets hebt (10k+ transacties)
+- ✅ Je Python al gebruikt of wilt leren
+- ✅ Je Plotly grafieken wilt (zoom, hover, etc.)
+- ✅ Je automatische installatie waardeert
+
+### Kies Excel als:
+- ✅ Je Excel dagelijks gebruikt
+- ✅ Je geen Python wilt/kunt installeren
+- ✅ Je direct in data wilt werken
+- ✅ Je PivotTables gewend bent
+- ✅ Je snelle setup wilt (0 installatie)
+- ✅ Je datasets kleiner zijn (<50k)
+
+**Beide versies delen:**
+- 🔒 **100% lokale verwerking** - Geen cloud
+- 🚫 **Geen externe verbindingen** - Volledig offline
+- 📁 **Hetzelfde bestandsformaat** - Kunnen dezelfde categorie_regels.csv gebruiken
+- 💾 **Export mogelijkheden** - Excel en CSV
+- 🏷️ **Dezelfde categorisatie** - Identieke logica
+
+**Pro tip:** Je kunt beide versies gebruiken! Importeer in Python voor snelle bulk-import, analyseer in Excel voor detail-werk, of andersom.
