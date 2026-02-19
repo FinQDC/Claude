@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BTW Beoordelingstool Zorg</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="app">
+        <header class="app-header">
+            <div class="header-left">
+                <div class="logo">&#9874;</div>
+                <div class="header-title">
+                    <h1>BTW Beoordelingstool</h1>
+                    <span class="subtitle">Fiscale beoordeling voor zorginstellingen</span>
+                </div>
+            </div>
+            <div class="header-right">
+                <span class="project-name" id="projectName">Geen project geladen</span>
+                <button class="btn btn-sm btn-outline" id="btnNewProject" title="Nieuw project">+ Nieuw</button>
+                <button class="btn btn-sm btn-outline" id="btnSaveProject" title="Project opslaan">Opslaan</button>
+            </div>
+        </header>
+
+        <nav class="main-nav">
+            <button class="nav-btn active" data-tab="dashboard">
+                <span class="nav-icon">&#9632;</span>
+                Dashboard
+            </button>
+            <button class="nav-btn" data-tab="import">
+                <span class="nav-icon">&#8593;</span>
+                Import
+            </button>
+            <button class="nav-btn" data-tab="mutaties">
+                <span class="nav-icon">&#9776;</span>
+                Mutaties
+                <span class="badge" id="badgeMutaties">0</span>
+            </button>
+            <button class="nav-btn" data-tab="vragen">
+                <span class="nav-icon">?</span>
+                Vragen
+                <span class="badge badge-warning" id="badgeVragen">0</span>
+            </button>
+            <button class="nav-btn" data-tab="rapportage">
+                <span class="nav-icon">&#9998;</span>
+                Rapportage
+            </button>
+            <button class="nav-btn" data-tab="instellingen">
+                <span class="nav-icon">&#9881;</span>
+                Instellingen
+            </button>
+        </nav>
+
+        <main class="app-content">
+            <!-- Dashboard -->
+            <section id="tab-dashboard" class="tab-content active">
+                <h2>Overzicht</h2>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-value" id="statTotaalMutaties">0</div>
+                        <div class="stat-label">Totaal mutaties</div>
+                    </div>
+                    <div class="stat-card stat-card-green">
+                        <div class="stat-value" id="statAftrekbaar">0</div>
+                        <div class="stat-label">Volledig aftrekbaar</div>
+                    </div>
+                    <div class="stat-card stat-card-red">
+                        <div class="stat-value" id="statNietAftrekbaar">0</div>
+                        <div class="stat-label">Niet-aftrekbaar</div>
+                    </div>
+                    <div class="stat-card stat-card-blue">
+                        <div class="stat-value" id="statProRata">0</div>
+                        <div class="stat-label">Pro rata</div>
+                    </div>
+                    <div class="stat-card stat-card-purple">
+                        <div class="stat-value" id="statPreProRata">0</div>
+                        <div class="stat-label">Pre-pro-rata</div>
+                    </div>
+                    <div class="stat-card stat-card-orange">
+                        <div class="stat-value" id="statOpenVragen">0</div>
+                        <div class="stat-label">Open vragen</div>
+                    </div>
+                </div>
+
+                <div class="dashboard-grid">
+                    <div class="card">
+                        <h3>BTW-aftrek samenvatting</h3>
+                        <div class="summary-table" id="dashboardSummary">
+                            <p class="text-muted">Importeer eerst gegevens om een overzicht te zien.</p>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <h3>Classificatieverdeling</h3>
+                        <div class="chart-container" id="classificationChart">
+                            <p class="text-muted">Geen gegevens beschikbaar.</p>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <h3>Recente activiteit</h3>
+                        <div id="recentActivity">
+                            <p class="text-muted">Nog geen activiteit.</p>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <h3>Aandachtspunten</h3>
+                        <div id="attentionPoints">
+                            <p class="text-muted">Geen aandachtspunten.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Import -->
+            <section id="tab-import" class="tab-content">
+                <h2>Gegevens importeren</h2>
+                <div class="import-grid">
+                    <div class="card">
+                        <h3>Grootboekmutaties importeren</h3>
+                        <p>Upload een CSV-bestand met grootboekmutaties. Het bestand moet de volgende kolommen bevatten (of vergelijkbaar):</p>
+                        <div class="column-info">
+                            <span class="tag">Boekdatum</span>
+                            <span class="tag">Grootboekrekening</span>
+                            <span class="tag">Naam rekening</span>
+                            <span class="tag">Omschrijving</span>
+                            <span class="tag">Bedrag</span>
+                            <span class="tag">BTW bedrag</span>
+                            <span class="tag">BTW code</span>
+                            <span class="tag">Kostenplaats</span>
+                            <span class="tag">Crediteur</span>
+                            <span class="tag">Naam crediteur</span>
+                        </div>
+                        <div class="upload-area" id="uploadMutaties">
+                            <div class="upload-icon">&#128196;</div>
+                            <p>Sleep een CSV-bestand hierheen of klik om te selecteren</p>
+                            <input type="file" id="fileMutaties" accept=".csv,.txt" hidden>
+                            <button class="btn btn-primary" id="btnSelectMutaties">Bestand selecteren</button>
+                        </div>
+                        <div id="mutatiesPreview" class="preview-container" style="display:none;">
+                            <h4>Voorbeeld van geimporteerde gegevens</h4>
+                            <div class="mapping-section" id="mutatieMappingSection">
+                                <h4>Kolomtoewijzing</h4>
+                                <p>Wijs de kolommen uit uw bestand toe aan de juiste velden:</p>
+                                <div id="mutatieMapping" class="mapping-grid"></div>
+                            </div>
+                            <div class="table-scroll">
+                                <table id="mutatiesPreviewTable" class="data-table">
+                                    <thead></thead>
+                                    <tbody></tbody>
+                                </table>
+                            </div>
+                            <div class="import-actions">
+                                <button class="btn btn-primary" id="btnImportMutaties">Importeren en beoordelen</button>
+                                <button class="btn btn-outline" id="btnCancelMutaties">Annuleren</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <h3>Crediteurenbestand importeren</h3>
+                        <p>Upload een CSV-bestand met crediteuren/leveranciers en hun BTW-classificatie:</p>
+                        <div class="column-info">
+                            <span class="tag">Crediteurcode</span>
+                            <span class="tag">Naam</span>
+                            <span class="tag">Type</span>
+                            <span class="tag">BTW-classificatie</span>
+                            <span class="tag">Opmerkingen</span>
+                        </div>
+                        <div class="upload-area" id="uploadCrediteuren">
+                            <div class="upload-icon">&#128101;</div>
+                            <p>Sleep een CSV-bestand hierheen of klik om te selecteren</p>
+                            <input type="file" id="fileCrediteuren" accept=".csv,.txt" hidden>
+                            <button class="btn btn-primary" id="btnSelectCrediteuren">Bestand selecteren</button>
+                        </div>
+                        <div id="crediteurenPreview" class="preview-container" style="display:none;">
+                            <h4>Voorbeeld van geimporteerde crediteuren</h4>
+                            <div class="mapping-section" id="crediteurMappingSection">
+                                <h4>Kolomtoewijzing</h4>
+                                <div id="crediteurMapping" class="mapping-grid"></div>
+                            </div>
+                            <div class="table-scroll">
+                                <table id="crediteurenPreviewTable" class="data-table">
+                                    <thead></thead>
+                                    <tbody></tbody>
+                                </table>
+                            </div>
+                            <div class="import-actions">
+                                <button class="btn btn-primary" id="btnImportCrediteuren">Importeren</button>
+                                <button class="btn btn-outline" id="btnCancelCrediteuren">Annuleren</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card" style="margin-top:1rem;">
+                    <h3>Voorbeeldbestanden</h3>
+                    <p>Download voorbeeldbestanden om de applicatie te testen:</p>
+                    <div class="example-buttons">
+                        <button class="btn btn-outline" id="btnDownloadExampleMutaties">Download voorbeeld mutaties</button>
+                        <button class="btn btn-outline" id="btnDownloadExampleCrediteuren">Download voorbeeld crediteuren</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Mutaties -->
+            <section id="tab-mutaties" class="tab-content">
+                <div class="section-header">
+                    <h2>Grootboekmutaties</h2>
+                    <div class="section-actions">
+                        <div class="filter-bar">
+                            <select id="filterClassificatie" class="form-select">
+                                <option value="">Alle classificaties</option>
+                                <option value="aftrekbaar">Volledig aftrekbaar</option>
+                                <option value="niet-aftrekbaar">Niet-aftrekbaar</option>
+                                <option value="pro-rata">Pro rata</option>
+                                <option value="pre-pro-rata">Pre-pro-rata</option>
+                                <option value="onbeoordeeld">Onbeoordeeld</option>
+                            </select>
+                            <select id="filterStatus" class="form-select">
+                                <option value="">Alle statussen</option>
+                                <option value="auto-classified">Automatisch</option>
+                                <option value="needs-review">Beoordeling nodig</option>
+                                <option value="reviewed">Beoordeeld</option>
+                                <option value="approved">Goedgekeurd</option>
+                            </select>
+                            <input type="text" id="filterSearch" class="form-input" placeholder="Zoeken in omschrijving...">
+                        </div>
+                        <button class="btn btn-primary" id="btnRunAssessment">Opnieuw beoordelen</button>
+                    </div>
+                </div>
+                <div class="table-scroll">
+                    <table id="mutationsTable" class="data-table data-table-interactive">
+                        <thead>
+                            <tr>
+                                <th class="sortable" data-sort="date">Datum</th>
+                                <th class="sortable" data-sort="ledgerAccount">Rekening</th>
+                                <th class="sortable" data-sort="ledgerName">Naam</th>
+                                <th>Omschrijving</th>
+                                <th class="sortable num" data-sort="amount">Bedrag</th>
+                                <th class="sortable num" data-sort="vatAmount">BTW</th>
+                                <th class="sortable" data-sort="classification">Classificatie</th>
+                                <th>Status</th>
+                                <th>Acties</th>
+                            </tr>
+                        </thead>
+                        <tbody id="mutationsBody">
+                        </tbody>
+                    </table>
+                </div>
+                <div class="pagination" id="mutationsPagination"></div>
+            </section>
+
+            <!-- Vragen -->
+            <section id="tab-vragen" class="tab-content">
+                <div class="section-header">
+                    <h2>Verduidelijkingsvragen</h2>
+                    <div class="section-actions">
+                        <select id="filterVragenStatus" class="form-select">
+                            <option value="">Alle vragen</option>
+                            <option value="open">Open</option>
+                            <option value="beantwoord">Beantwoord</option>
+                        </select>
+                    </div>
+                </div>
+                <div id="questionsContainer" class="questions-list">
+                    <p class="text-muted">Nog geen vragen gegenereerd. Importeer mutaties en voer een beoordeling uit.</p>
+                </div>
+            </section>
+
+            <!-- Rapportage -->
+            <section id="tab-rapportage" class="tab-content">
+                <h2>Rapportage</h2>
+                <div class="report-grid">
+                    <div class="card">
+                        <h3>Fiscaal overzicht</h3>
+                        <p>Totaaloverzicht van de BTW-beoordeling per classificatie.</p>
+                        <button class="btn btn-primary" id="btnGenerateReport">Rapport genereren</button>
+                    </div>
+                    <div class="card">
+                        <h3>Export</h3>
+                        <p>Exporteer de beoordeelde mutaties naar CSV.</p>
+                        <button class="btn btn-outline" id="btnExportCSV">Exporteer naar CSV</button>
+                        <button class="btn btn-outline" id="btnExportSummary">Exporteer samenvatting</button>
+                    </div>
+                </div>
+                <div id="reportOutput" class="report-output" style="display:none;">
+                    <div class="card">
+                        <div class="report-header">
+                            <h3>Fiscaal Rapport BTW-beoordeling</h3>
+                            <button class="btn btn-sm btn-outline" id="btnPrintReport">Afdrukken</button>
+                        </div>
+                        <div id="reportContent"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Instellingen -->
+            <section id="tab-instellingen" class="tab-content">
+                <h2>Instellingen</h2>
+                <div class="settings-grid">
+                    <div class="card">
+                        <h3>Algemene instellingen</h3>
+                        <div class="form-group">
+                            <label for="settingProjectNaam">Projectnaam</label>
+                            <input type="text" id="settingProjectNaam" class="form-input" placeholder="Bijv. BTW-aangifte 2024">
+                        </div>
+                        <div class="form-group">
+                            <label for="settingOrganisatie">Organisatie</label>
+                            <input type="text" id="settingOrganisatie" class="form-input" placeholder="Naam zorginstelling">
+                        </div>
+                        <div class="form-group">
+                            <label for="settingProRata">Pro rata percentage (%)</label>
+                            <input type="number" id="settingProRata" class="form-input" min="0" max="100" step="0.1" value="5">
+                            <span class="help-text">Het percentage voorbelasting dat aftrekbaar is op basis van de verhouding belaste/totale omzet.</span>
+                        </div>
+                        <div class="form-group">
+                            <label for="settingPeriode">Beoordelingsperiode</label>
+                            <input type="text" id="settingPeriode" class="form-input" placeholder="Bijv. 2024">
+                        </div>
+                        <button class="btn btn-primary" id="btnSaveSettings">Instellingen opslaan</button>
+                    </div>
+
+                    <div class="card">
+                        <h3>Classificatieregels</h3>
+                        <p>Beheer de regels waarmee mutaties automatisch worden geclassificeerd.</p>
+                        <button class="btn btn-primary" id="btnAddRule">+ Regel toevoegen</button>
+                        <button class="btn btn-outline" id="btnResetRules">Standaardregels herstellen</button>
+                        <div class="table-scroll" style="margin-top:1rem;">
+                            <table id="rulesTable" class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Prioriteit</th>
+                                        <th>Naam</th>
+                                        <th>Voorwaarden</th>
+                                        <th>Classificatie</th>
+                                        <th>Actief</th>
+                                        <th>Acties</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="rulesBody"></tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <h3>Gegevens beheer</h3>
+                        <div class="data-management">
+                            <button class="btn btn-outline" id="btnExportProject">Project exporteren (JSON)</button>
+                            <button class="btn btn-outline" id="btnImportProject">Project importeren (JSON)</button>
+                            <input type="file" id="fileImportProject" accept=".json" hidden>
+                            <button class="btn btn-danger" id="btnClearData">Alle gegevens wissen</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Modal: Mutatie detail -->
+    <div class="modal-overlay" id="modalMutatieDetail" style="display:none;">
+        <div class="modal">
+            <div class="modal-header">
+                <h3>Mutatie details</h3>
+                <button class="modal-close" data-close-modal="modalMutatieDetail">&times;</button>
+            </div>
+            <div class="modal-body" id="modalMutatieBody"></div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" id="btnSaveMutatie">Opslaan</button>
+                <button class="btn btn-outline" data-close-modal="modalMutatieDetail">Sluiten</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Regel bewerken -->
+    <div class="modal-overlay" id="modalRegel" style="display:none;">
+        <div class="modal modal-lg">
+            <div class="modal-header">
+                <h3 id="modalRegelTitle">Regel bewerken</h3>
+                <button class="modal-close" data-close-modal="modalRegel">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="ruleNaam">Regelnaam</label>
+                    <input type="text" id="ruleNaam" class="form-input" placeholder="Bijv. Medische kosten">
+                </div>
+                <div class="form-group">
+                    <label for="rulePrioriteit">Prioriteit (lager = eerder)</label>
+                    <input type="number" id="rulePrioriteit" class="form-input" value="50" min="1" max="999">
+                </div>
+                <div class="form-group">
+                    <label>Voorwaarden</label>
+                    <div id="ruleConditions" class="conditions-list"></div>
+                    <button class="btn btn-sm btn-outline" id="btnAddCondition">+ Voorwaarde</button>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="ruleClassificatie">Classificatie</label>
+                        <select id="ruleClassificatie" class="form-select">
+                            <option value="aftrekbaar">Volledig aftrekbaar</option>
+                            <option value="niet-aftrekbaar">Niet-aftrekbaar</option>
+                            <option value="pro-rata">Pro rata</option>
+                            <option value="pre-pro-rata">Pre-pro-rata</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="ruleAftrekPercentage">Aftrekpercentage (%)</label>
+                        <input type="number" id="ruleAftrekPercentage" class="form-input" value="100" min="0" max="100">
+                    </div>
+                    <div class="form-group">
+                        <label for="rulePreProRataPercentage">Pre-pro-rata % (optioneel)</label>
+                        <input type="number" id="rulePreProRataPercentage" class="form-input" value="0" min="0" max="100">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="ruleOmschrijving">Toelichting</label>
+                    <textarea id="ruleOmschrijving" class="form-input" rows="2" placeholder="Uitleg van deze regel..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" id="ruleActief" checked> Regel actief
+                    </label>
+                </div>
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" id="ruleVraagStellen"> Verduidelijkingsvraag stellen bij match
+                    </label>
+                </div>
+                <div class="form-group" id="ruleVraagGroup" style="display:none;">
+                    <label for="ruleVraagTekst">Vraagtekst</label>
+                    <textarea id="ruleVraagTekst" class="form-input" rows="2" placeholder="Welke vraag moet gesteld worden?"></textarea>
+                    <label for="ruleVraagType" style="margin-top:0.5rem;">Vraagtype</label>
+                    <select id="ruleVraagType" class="form-select">
+                        <option value="keuze">Meerkeuze</option>
+                        <option value="percentage">Percentage</option>
+                        <option value="ja-nee">Ja/Nee</option>
+                        <option value="tekst">Vrij tekst</option>
+                    </select>
+                    <div id="ruleVraagOpties" style="margin-top:0.5rem;display:none;">
+                        <label>Keuze-opties (per regel)</label>
+                        <textarea id="ruleVraagOptiesTekst" class="form-input" rows="3" placeholder="Optie 1&#10;Optie 2&#10;Optie 3"></textarea>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" id="btnSaveRule">Opslaan</button>
+                <button class="btn btn-outline" data-close-modal="modalRegel">Annuleren</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Nieuw project -->
+    <div class="modal-overlay" id="modalNieuwProject" style="display:none;">
+        <div class="modal">
+            <div class="modal-header">
+                <h3>Nieuw project</h3>
+                <button class="modal-close" data-close-modal="modalNieuwProject">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="newProjectNaam">Projectnaam</label>
+                    <input type="text" id="newProjectNaam" class="form-input" placeholder="Bijv. BTW-aangifte 2024">
+                </div>
+                <div class="form-group">
+                    <label for="newProjectOrganisatie">Organisatie</label>
+                    <input type="text" id="newProjectOrganisatie" class="form-input" placeholder="Naam zorginstelling">
+                </div>
+                <div class="form-group">
+                    <label for="newProjectProRata">Pro rata percentage (%)</label>
+                    <input type="number" id="newProjectProRata" class="form-input" value="5" min="0" max="100" step="0.1">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" id="btnCreateProject">Project aanmaken</button>
+                <button class="btn btn-outline" data-close-modal="modalNieuwProject">Annuleren</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast container -->
+    <div id="toastContainer" class="toast-container"></div>
+
+    <script src="js/utils.js"></script>
+    <script src="js/data-store.js"></script>
+    <script src="js/import-handler.js"></script>
+    <script src="js/rule-engine.js"></script>
+    <script src="js/assessment.js"></script>
+    <script src="js/reports.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>

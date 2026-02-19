@@ -1,0 +1,21 @@
+Boekdatum;Grootboekrekening;Naam rekening;Omschrijving;Bedrag;BTW bedrag;BTW code;Kostenplaats;Crediteur;Naam crediteur
+15-01-2024;4100;Huurkosten;Huur kantoor/zorgpand Q1 2024;75000,00;15750,00;21;KP001;C001;Vastgoed BV
+15-01-2024;4110;Energiekosten;Gas en elektra januari;8500,00;1785,00;21;KP001;C002;Eneco Zakelijk
+20-01-2024;4200;Kantoorbenodigdheden;Kantoorartikelen Q1;1250,00;262,50;21;KP003;C003;Staples BV
+22-01-2024;4400;Medische middelen;Verbandmaterialen januari;4800,00;1008,00;21;KP010;C010;Mediq
+25-01-2024;4410;Geneesmiddelen;Medicijnen voorraad jan;12500,00;2625,00;21;KP010;C011;Brocacef
+28-01-2024;4300;Accountantskosten;Controle jaarrekening 2023;15000,00;3150,00;21;KP003;C020;BDO Audit
+01-02-2024;4500;Keukenkosten;Levensmiddelen februari;6200,00;558,00;9;KP005;C030;Sligro Food Group
+05-02-2024;4700;ICT hardware;Laptops administratie;8900,00;1869,00;21;KP003;C040;Dell BV
+10-02-2024;4030;Overige personeelskosten;Bedrijfskleding verpleging;3200,00;672,00;21;KP002;C050;Textiel Service BV
+15-02-2024;4310;Advieskosten;Juridisch advies fusie;22000,00;4620,00;21;KP003;C060;Loyens en Loeff
+18-02-2024;4120;Schoonmaakkosten;Schoonmaak februari;9500,00;1995,00;21;KP001;C070;CSU Cleaning
+20-02-2024;4600;Onderhoud installaties;Onderhoud CV/airco;5400,00;1134,00;21;KP001;C080;Wolter en Dros
+25-02-2024;4800;Rentekosten;Rente hypotheek Q1;18000,00;0,00;0;KP003;C090;ABN AMRO
+01-03-2024;4210;Telefoonkosten;Telefonie en internet maart;3800,00;798,00;21;KP003;C041;KPN Zakelijk
+05-03-2024;4420;Laboratoriumkosten;Labonderzoeken Q1;7500,00;1575,00;21;KP010;C100;PAMM Laboratorium
+10-03-2024;4050;Opleidingskosten;Bijscholing verpleegkundig personeel;4500,00;945,00;21;KP002;C110;VenVN
+15-03-2024;4130;Onderhoud gebouw;Schilderwerk buitenzijde;28000,00;5880,00;21;KP001;C120;Van der Werf Schilders
+20-03-2024;8000;Omzet zorg WLZ;Productie WLZ maart;-185000,00;0,00;0;;;Zorgkantoor
+20-03-2024;8100;Omzet catering extern;Omzet restaurant medewerkers;-12500,00;-2625,00;21;KP005;;Diverse
+25-03-2024;4330;Bestuurskosten;Representatiekosten RvB;2800,00;588,00;21;KP003;C130;Hotel Okura

@@ -1,0 +1,19 @@
+Crediteurcode;Naam;Type;BTW-classificatie;Opmerkingen
+C001;Vastgoed BV;Huisvesting;pre-pro-rata;Verhuurder kantoor/zorgpand - 30% kantoor 70% zorg
+C002;Eneco Zakelijk;Energie;pre-pro-rata;Energieleverancier gehele pand
+C003;Staples BV;Kantoor;pro rata;Kantoorartikelen
+C010;Mediq;Medisch;niet-aftrekbaar;Leverancier medische middelen
+C011;Brocacef;Medisch;niet-aftrekbaar;Geneesmiddelen leverancier
+C020;BDO Audit;Advies;pro rata;Accountant
+C030;Sligro Food Group;Voeding;;Vraag: patient of medewerker voeding?
+C040;Dell BV;ICT;pro rata;Hardware leverancier
+C041;KPN Zakelijk;ICT;pro rata;Telecom
+C050;Textiel Service BV;Personeel;;Vraag: zorgpersoneel of kantoor?
+C060;Loyens en Loeff;Advies;;Afhankelijk van adviesonderwerp
+C070;CSU Cleaning;Facilitair;pre-pro-rata;Schoonmaak gehele pand
+C080;Wolter en Dros;Techniek;pre-pro-rata;Onderhoud installaties
+C090;ABN AMRO;Financieel;niet-aftrekbaar;Bancaire kosten vrijgesteld
+C100;PAMM Laboratorium;Medisch;niet-aftrekbaar;Laboratoriumonderzoeken
+C110;VenVN;Opleiding;niet-aftrekbaar;Opleiding zorgpersoneel
+C120;Van der Werf Schilders;Onderhoud;pre-pro-rata;Onderhoud pand
+C130;Hotel Okura;Representatie;pro rata;Bestuurskosten
