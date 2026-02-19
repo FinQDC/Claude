@@ -1024,6 +1024,80 @@ textarea.form-input {
     font-weight: 400;
 }
 
+/* Bestemmingsoverzicht */
+.bestemming-bars {
+    display: flex;
+    height: 32px;
+    border-radius: var(--radius);
+    overflow: hidden;
+    margin-bottom: 0.75rem;
+}
+
+.bestemming-bar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: white;
+    transition: width 0.5s ease;
+    min-width: 30px;
+}
+
+.bestemming-bar-zorg { background: var(--danger); }
+.bestemming-bar-kantoor { background: var(--info); }
+.bestemming-bar-commercieel { background: var(--accent); }
+.bestemming-bar-algemeen { background: var(--warning); }
+
+.bestemming-legenda {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    font-size: 0.8rem;
+}
+
+.bestemming-legenda-item {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+}
+
+.bestemming-kleur {
+    width: 12px;
+    height: 12px;
+    border-radius: 2px;
+    display: inline-block;
+}
+
+.bestemming-compact {
+    font-size: 0.7rem;
+    color: var(--text-light);
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+}
+
+/* Type badges */
+.type-badge {
+    display: inline-block;
+    padding: 0.1rem 0.4rem;
+    border-radius: 3px;
+    font-size: 0.7rem;
+    font-weight: 500;
+}
+
+.type-nieuwbouw { background: #dbeafe; color: #1e40af; }
+.type-verbouw { background: #fef3c7; color: #92400e; }
+.type-verduurzaming { background: #d1fae5; color: #065f46; }
+
+.cat-badge {
+    display: inline-block;
+    padding: 0.1rem 0.4rem;
+    border-radius: 3px;
+    font-size: 0.7rem;
+    background: var(--bg);
+    color: var(--secondary);
+}
+
 /* Print styles */
 @media print {
     .app-header, .main-nav, .section-actions, .btn, .filter-bar,

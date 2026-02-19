@@ -1,435 +1,339 @@
-/* === Rule Engine - BTW classification rules for healthcare === */
+/* === Regelengine - BTW classificatieregels voor bouw/verbouw/duurzaamheid === */
 App.RuleEngine = (function() {
     'use strict';
 
-    var RULES_KEY = 'zorg_btw_rules';
+    var REGELS_SLEUTEL = 'zorg_btw_inv_regels';
 
-    function getDefaultRules() {
+    function getStandaardRegels() {
         return [
-            // Personeelskosten
+            // === BOUWKUNDIG ===
             {
-                id: 'r001', name: 'Personeelskosten algemeen', priority: 10,
-                conditions: [{ field: 'ledgerAccount', operator: 'range', value: '4000-4099' }],
-                classification: 'pro-rata', deductionPercentage: 100, preProRataPercentage: 0,
-                description: 'Personeelskosten worden in beginsel via pro rata verwerkt (mix belast/vrijgesteld).',
+                id: 'r001', name: 'Bouwkundig - nieuwbouw/verbouw', priority: 10,
+                conditions: [{ field: 'categorie', operator: 'equals', value: 'bouwkundig' }],
+                classification: 'pre-pro-rata', herzieningType: 'onroerend',
+                description: 'Bouwkundige werkzaamheden aan het gebouw: BTW-aftrek op basis van bestemmingsverhouding (m2). Onroerend goed, herzieningstermijn 10 jaar.',
                 active: true, askQuestion: false, questionText: '', questionType: '', questionOptions: ''
             },
-            // Huisvestingskosten
+            // === INSTALLATIES ===
             {
-                id: 'r002', name: 'Huurkosten', priority: 10,
-                conditions: [{ field: 'ledgerAccount', operator: 'range', value: '4100-4109' }],
-                classification: 'pre-pro-rata', deductionPercentage: 100, preProRataPercentage: 30,
-                description: 'Huurkosten pand: eerst pre-pro-rata verdeling op basis van m2 gebruik.',
+                id: 'r010', name: 'Installaties - gebouwgebonden', priority: 10,
+                conditions: [{ field: 'categorie', operator: 'equals', value: 'installaties' }],
+                classification: 'pre-pro-rata', herzieningType: 'onroerend',
+                description: 'Gebouwgebonden installaties (HVAC, elektra, sanitair, liften): onroerend, aftrek op basis van bestemmingsverhouding.',
                 active: true, askQuestion: true,
-                questionText: 'Welk percentage van het gehuurde pand wordt gebruikt voor belaste activiteiten (kantoor, verhuur, catering)?',
-                questionType: 'percentage', questionOptions: ''
-            },
-            {
-                id: 'r003', name: 'Energiekosten', priority: 10,
-                conditions: [{ field: 'ledgerAccount', operator: 'range', value: '4110-4119' }],
-                classification: 'pre-pro-rata', deductionPercentage: 100, preProRataPercentage: 30,
-                description: 'Energiekosten volgen de verdeling van het pand (pre-pro-rata).',
-                active: true, askQuestion: false, questionText: '', questionType: '', questionOptions: ''
-            },
-            {
-                id: 'r004', name: 'Schoonmaakkosten', priority: 10,
-                conditions: [{ field: 'ledgerAccount', operator: 'range', value: '4120-4129' }],
-                classification: 'pre-pro-rata', deductionPercentage: 100, preProRataPercentage: 30,
-                description: 'Schoonmaakkosten volgen de verdeling van het pand (pre-pro-rata).',
-                active: true, askQuestion: false, questionText: '', questionType: '', questionOptions: ''
-            },
-            {
-                id: 'r005', name: 'Onderhoud gebouw', priority: 10,
-                conditions: [{ field: 'ledgerAccount', operator: 'range', value: '4130-4149' }],
-                classification: 'pre-pro-rata', deductionPercentage: 100, preProRataPercentage: 30,
-                description: 'Onderhoud en verzekering gebouw: pre-pro-rata op basis van gebruik.',
-                active: true, askQuestion: false, questionText: '', questionType: '', questionOptions: ''
-            },
-            // Kantoorkosten
-            {
-                id: 'r010', name: 'Kantoorbenodigdheden', priority: 10,
-                conditions: [{ field: 'ledgerAccount', operator: 'range', value: '4200-4209' }],
-                classification: 'pro-rata', deductionPercentage: 100, preProRataPercentage: 0,
-                description: 'Kantoorbenodigdheden: algemene kosten, pro rata aftrek.',
-                active: true, askQuestion: false, questionText: '', questionType: '', questionOptions: ''
-            },
-            {
-                id: 'r011', name: 'Telefoon en communicatie', priority: 10,
-                conditions: [{ field: 'ledgerAccount', operator: 'range', value: '4210-4229' }],
-                classification: 'pro-rata', deductionPercentage: 100, preProRataPercentage: 0,
-                description: 'Telefoon, internet en porti: algemene kosten, pro rata.',
-                active: true, askQuestion: false, questionText: '', questionType: '', questionOptions: ''
-            },
-            {
-                id: 'r012', name: 'Drukwerk', priority: 15,
-                conditions: [{ field: 'ledgerAccount', operator: 'range', value: '4230-4239' }],
-                classification: 'pro-rata', deductionPercentage: 100, preProRataPercentage: 0,
-                description: 'Drukwerk: afhankelijk van het doel. Standaard pro rata.',
-                active: true, askQuestion: true,
-                questionText: 'Is dit drukwerk bedoeld voor werving/commerciele activiteiten of voor interne/zorg doeleinden?',
+                questionText: 'Betreft deze installatie het gehele gebouw of een specifiek gebouwdeel?',
                 questionType: 'keuze',
-                questionOptions: 'Commercieel/werving (volledig aftrekbaar)\nIntern/zorg (pro rata)\nOnbekend'
+                questionOptions: 'Gehele gebouw (bestemmingsverhouding)\nAlleen zorggedeelte (niet-aftrekbaar)\nAlleen kantoor/commercieel gedeelte (aftrekbaar)\nSpecifiek voor keuken/restaurant (aftrekbaar)'
             },
-            // Algemene kosten
+            // === AFBOUW ===
             {
-                id: 'r020', name: 'Accountantskosten', priority: 10,
-                conditions: [{ field: 'ledgerAccount', operator: 'range', value: '4300-4309' }],
-                classification: 'pro-rata', deductionPercentage: 100, preProRataPercentage: 0,
-                description: 'Accountantskosten: algemene overhead, pro rata.',
-                active: true, askQuestion: false, questionText: '', questionType: '', questionOptions: ''
-            },
-            {
-                id: 'r021', name: 'Advieskosten', priority: 10,
-                conditions: [{ field: 'ledgerAccount', operator: 'range', value: '4310-4319' }],
-                classification: 'pro-rata', deductionPercentage: 100, preProRataPercentage: 0,
-                description: 'Advieskosten: standaard pro rata, maar kan volledig aftrekbaar zijn als het advies uitsluitend betrekking heeft op belaste activiteiten.',
+                id: 'r020', name: 'Afbouw - interieur', priority: 10,
+                conditions: [{ field: 'categorie', operator: 'equals', value: 'afbouw' }],
+                classification: 'pre-pro-rata', herzieningType: 'onroerend',
+                description: 'Afbouw en interieur (wanden, vloeren, plafonds): onroerend, aftrek op basis van bestemming van het betreffende gebouwdeel.',
                 active: true, askQuestion: true,
-                questionText: 'Heeft dit advies uitsluitend betrekking op belaste activiteiten (bijv. commerciele verhuur, catering)?',
+                questionText: 'In welk gebouwdeel worden deze afbouwwerkzaamheden uitgevoerd?',
                 questionType: 'keuze',
-                questionOptions: 'Ja, uitsluitend belaste activiteiten (volledig aftrekbaar)\nNee, algemeen/gemengd (pro rata)\nJa, uitsluitend vrijgestelde zorgactiviteiten (niet-aftrekbaar)'
+                questionOptions: 'Gehele gebouw / meerdere delen (bestemmingsverhouding)\nVerpleegafdeling / zorgruimtes (niet-aftrekbaar)\nKantoor / administratie (pro rata via bestemmingsverhouding)\nRestaurant / keuken (aftrekbaar)\nAlgemene ruimtes (hal, gang) (bestemmingsverhouding)'
             },
+            // === TERREIN ===
             {
-                id: 'r022', name: 'Administratiekosten', priority: 10,
-                conditions: [{ field: 'ledgerAccount', operator: 'range', value: '4320-4329' }],
-                classification: 'pro-rata', deductionPercentage: 100, preProRataPercentage: 0,
-                description: 'Administratiekosten: algemene overhead, pro rata.',
-                active: true, askQuestion: false, questionText: '', questionType: '', questionOptions: ''
-            },
-            {
-                id: 'r023', name: 'Bestuurskosten', priority: 10,
-                conditions: [{ field: 'ledgerAccount', operator: 'range', value: '4330-4339' }],
-                classification: 'pro-rata', deductionPercentage: 100, preProRataPercentage: 0,
-                description: 'Bestuurskosten: algemene overhead, pro rata.',
-                active: true, askQuestion: false, questionText: '', questionType: '', questionOptions: ''
-            },
-            // Patientgebonden kosten
-            {
-                id: 'r030', name: 'Medische middelen', priority: 10,
-                conditions: [{ field: 'ledgerAccount', operator: 'range', value: '4400-4409' }],
-                classification: 'niet-aftrekbaar', deductionPercentage: 0, preProRataPercentage: 0,
-                description: 'Medische middelen direct gerelateerd aan (vrijgestelde) zorgverlening.',
-                active: true, askQuestion: false, questionText: '', questionType: '', questionOptions: ''
-            },
-            {
-                id: 'r031', name: 'Geneesmiddelen', priority: 10,
-                conditions: [{ field: 'ledgerAccount', operator: 'range', value: '4410-4419' }],
-                classification: 'niet-aftrekbaar', deductionPercentage: 0, preProRataPercentage: 0,
-                description: 'Geneesmiddelen voor patientenzorg: niet-aftrekbaar (vrijgesteld).',
-                active: true, askQuestion: false, questionText: '', questionType: '', questionOptions: ''
-            },
-            {
-                id: 'r032', name: 'Laboratoriumkosten', priority: 10,
-                conditions: [{ field: 'ledgerAccount', operator: 'range', value: '4420-4429' }],
-                classification: 'niet-aftrekbaar', deductionPercentage: 0, preProRataPercentage: 0,
-                description: 'Laboratoriumkosten voor patientenzorg: niet-aftrekbaar.',
-                active: true, askQuestion: false, questionText: '', questionType: '', questionOptions: ''
-            },
-            {
-                id: 'r033', name: 'Voeding patienten', priority: 10,
-                conditions: [{ field: 'ledgerAccount', operator: 'range', value: '4430-4439' }],
-                classification: 'niet-aftrekbaar', deductionPercentage: 0, preProRataPercentage: 0,
-                description: 'Voeding voor patienten is onderdeel van de vrijgestelde zorgprestatie.',
-                active: true, askQuestion: false, questionText: '', questionType: '', questionOptions: ''
-            },
-            // Voeding/catering
-            {
-                id: 'r040', name: 'Keukenkosten/catering', priority: 10,
-                conditions: [{ field: 'ledgerAccount', operator: 'range', value: '4500-4599' }],
-                classification: 'pre-pro-rata', deductionPercentage: 100, preProRataPercentage: 50,
-                description: 'Keukenkosten kunnen gemengd zijn: patientenvoeding (niet-aftrekbaar), medewerkersrestaurant (pro rata), externe catering (aftrekbaar).',
+                id: 'r030', name: 'Terrein - buitenruimte', priority: 10,
+                conditions: [{ field: 'categorie', operator: 'equals', value: 'terrein' }],
+                classification: 'pre-pro-rata', herzieningType: 'onroerend',
+                description: 'Terreininrichting en buitenruimte: onroerend, aftrek op basis van bestemmingsverhouding gebouw.',
                 active: true, askQuestion: true,
-                questionText: 'Wat is de bestemming van deze voedings-/cateringkosten?',
+                questionText: 'Betreft de terreininrichting het parkeerterrein, de tuin of het gehele terrein?',
                 questionType: 'keuze',
-                questionOptions: 'Uitsluitend patientenvoeding (niet-aftrekbaar)\nMedewerkerrestaurant (pro rata)\nExterne catering/horeca (volledig aftrekbaar)\nGemengd patient/medewerker (pre-pro-rata 50%)'
+                questionOptions: 'Gehele terrein (bestemmingsverhouding)\nParkeerterrein bezoekers/personeel (bestemmingsverhouding)\nParkeerterrein commercieel/betaald (aftrekbaar)\nTuin/groen patientengebruik (niet-aftrekbaar)'
             },
-            // Onderhoud/techniek
+            // === DUURZAAMHEID - specifieke regels ===
             {
-                id: 'r050', name: 'Onderhoud installaties', priority: 10,
-                conditions: [{ field: 'ledgerAccount', operator: 'range', value: '4600-4619' }],
-                classification: 'pre-pro-rata', deductionPercentage: 100, preProRataPercentage: 30,
-                description: 'Onderhoud installaties en apparatuur: pre-pro-rata op basis van gebruik.',
+                id: 'r040', name: 'Zonnepanelen', priority: 5,
+                conditions: [
+                    { field: 'categorie', operator: 'equals', value: 'duurzaamheid' },
+                    { field: 'omschrijving', operator: 'contains', value: 'zonnepa' }
+                ],
+                classification: 'pre-pro-rata', herzieningType: 'onroerend',
+                description: 'Zonnepanelen op het dak: BTW aftrekbaar op basis van bestemmingsverhouding gebouw. Let op: als stroom wordt teruggeleverd aan het net is dit een belaste prestatie die het pro rata percentage kan verhogen.',
                 active: true, askQuestion: true,
-                questionText: 'Wordt deze installatie/apparatuur (deels) gebruikt voor belaste activiteiten?',
+                questionText: 'Worden de zonnepanelen gebruikt voor eigen verbruik, teruglevering aan het net, of beide?',
                 questionType: 'keuze',
-                questionOptions: 'Uitsluitend zorg/vrijgesteld (niet-aftrekbaar)\nAlgemeen gebruik (pre-pro-rata)\nUitsluitend belaste activiteiten (volledig aftrekbaar)'
+                questionOptions: 'Volledig eigen verbruik (bestemmingsverhouding gebouw)\nDeels teruglevering aan net (volledig aftrekbaar - belaste activiteit)\nVolledig teruglevering aan net (volledig aftrekbaar)'
             },
-            // ICT
             {
-                id: 'r060', name: 'ICT kosten', priority: 10,
-                conditions: [{ field: 'ledgerAccount', operator: 'range', value: '4700-4799' }],
-                classification: 'pro-rata', deductionPercentage: 100, preProRataPercentage: 0,
-                description: 'ICT kosten (hardware, software, diensten): algemene overhead, pro rata.',
-                active: true, askQuestion: false, questionText: '', questionType: '', questionOptions: ''
-            },
-            // Financiele kosten
-            {
-                id: 'r070', name: 'Rentekosten', priority: 10,
-                conditions: [{ field: 'ledgerAccount', operator: 'range', value: '4800-4809' }],
-                classification: 'niet-aftrekbaar', deductionPercentage: 0, preProRataPercentage: 0,
-                description: 'Rentekosten zijn vrijgesteld van BTW (art. 11 lid 1 sub j Wet OB).',
+                id: 'r041', name: 'Warmtepomp / WKO', priority: 5,
+                conditions: [
+                    { field: 'categorie', operator: 'equals', value: 'duurzaamheid' },
+                    { field: 'omschrijving', operator: 'contains', value: 'warmtepomp' }
+                ],
+                classification: 'pre-pro-rata', herzieningType: 'onroerend',
+                description: 'Warmtepomp/WKO installatie: gebouwgebonden, onroerend goed. BTW-aftrek op basis van bestemmingsverhouding.',
                 active: true, askQuestion: false, questionText: '', questionType: '', questionOptions: ''
             },
             {
-                id: 'r071', name: 'Bankkosten', priority: 10,
-                conditions: [{ field: 'ledgerAccount', operator: 'range', value: '4810-4819' }],
-                classification: 'niet-aftrekbaar', deductionPercentage: 0, preProRataPercentage: 0,
-                description: 'Bankkosten: financiele dienstverlening is vrijgesteld.',
+                id: 'r042', name: 'WKO installatie', priority: 5,
+                conditions: [
+                    { field: 'categorie', operator: 'equals', value: 'duurzaamheid' },
+                    { field: 'omschrijving', operator: 'contains', value: 'wko' }
+                ],
+                classification: 'pre-pro-rata', herzieningType: 'onroerend',
+                description: 'WKO (warmte-koude opslag): gebouwgebonden, onroerend goed.',
                 active: true, askQuestion: false, questionText: '', questionType: '', questionOptions: ''
             },
             {
-                id: 'r072', name: 'Afschrijvingen', priority: 15,
-                conditions: [{ field: 'ledgerAccount', operator: 'range', value: '4820-4899' }],
-                classification: 'pro-rata', deductionPercentage: 100, preProRataPercentage: 0,
-                description: 'Afschrijvingen: BTW is al beoordeeld bij aanschaf. Geen directe BTW-relevantie bij afschrijving zelf.',
-                active: true, askQuestion: false, questionText: '', questionType: '', questionOptions: ''
-            },
-            // Omzet
-            {
-                id: 'r080', name: 'Omzet zorg (WLZ/ZVW)', priority: 5,
-                conditions: [{ field: 'ledgerAccount', operator: 'range', value: '8000-8099' }],
-                classification: 'niet-aftrekbaar', deductionPercentage: 0, preProRataPercentage: 0,
-                description: 'Zorgomzet is vrijgesteld van BTW. Geen vooraftrek.',
+                id: 'r043', name: 'Isolatie', priority: 5,
+                conditions: [
+                    { field: 'categorie', operator: 'equals', value: 'duurzaamheid' },
+                    { field: 'omschrijving', operator: 'contains', value: 'isolatie' }
+                ],
+                classification: 'pre-pro-rata', herzieningType: 'onroerend',
+                description: 'Isolatie (gevel, dak, vloer): onroerend, onderdeel van het gebouw. Aftrek op basis van bestemmingsverhouding.',
                 active: true, askQuestion: false, questionText: '', questionType: '', questionOptions: ''
             },
             {
-                id: 'r081', name: 'Omzet overig/belast', priority: 5,
-                conditions: [{ field: 'ledgerAccount', operator: 'range', value: '8100-8199' }],
-                classification: 'aftrekbaar', deductionPercentage: 100, preProRataPercentage: 0,
-                description: 'Overige belaste omzet (catering, verhuur, etc.). Kosten hiervoor zijn aftrekbaar.',
-                active: true, askQuestion: false, questionText: '', questionType: '', questionOptions: ''
-            },
-            // BTW code based rules (lower priority, act as fallback)
-            {
-                id: 'r090', name: 'BTW code 0% / vrijgesteld', priority: 50,
-                conditions: [{ field: 'vatCode', operator: 'in', value: '0,0%,geen,vrij,vrijgesteld,exempt' }],
-                classification: 'niet-aftrekbaar', deductionPercentage: 0, preProRataPercentage: 0,
-                description: 'Facturen zonder BTW / met BTW-code vrijgesteld.',
-                active: true, askQuestion: false, questionText: '', questionType: '', questionOptions: ''
-            },
-            // Opleiding zorgpersoneel
-            {
-                id: 'r095', name: 'Opleidingskosten', priority: 12,
-                conditions: [{ field: 'ledgerAccount', operator: 'range', value: '4050-4059' }],
-                classification: 'pro-rata', deductionPercentage: 100, preProRataPercentage: 0,
-                description: 'Opleidingskosten: standaard pro rata. Indien uitsluitend voor zorgpersoneel in het kader van vrijgestelde zorg, dan niet-aftrekbaar.',
+                id: 'r044', name: 'LED verlichting', priority: 5,
+                conditions: [
+                    { field: 'categorie', operator: 'equals', value: 'duurzaamheid' },
+                    { field: 'omschrijving', operator: 'contains', value: 'led' }
+                ],
+                classification: 'pre-pro-rata', herzieningType: 'onroerend',
+                description: 'LED verlichting: als vast aangebracht geldt dit als onroerend. Aftrek op basis van bestemmingsverhouding.',
                 active: true, askQuestion: true,
-                questionText: 'Is deze opleiding specifiek gericht op vrijgestelde zorgactiviteiten of betreft het algemene bijscholing?',
+                questionText: 'Betreft de LED verlichting het gehele gebouw of een specifiek deel?',
                 questionType: 'keuze',
-                questionOptions: 'Specifiek voor vrijgestelde zorg (niet-aftrekbaar)\nAlgemene bijscholing/management (pro rata)\nGericht op belaste activiteiten (volledig aftrekbaar)'
+                questionOptions: 'Gehele gebouw (bestemmingsverhouding)\nAlleen zorggedeelte (niet-aftrekbaar)\nAlleen kantoor/commercieel (aftrekbaar)'
+            },
+            {
+                id: 'r045', name: 'Laadpalen', priority: 5,
+                conditions: [
+                    { field: 'categorie', operator: 'equals', value: 'duurzaamheid' },
+                    { field: 'omschrijving', operator: 'contains', value: 'laadp' }
+                ],
+                classification: 'pre-pro-rata', herzieningType: 'roerend',
+                description: 'Laadpalen: kwalificeren doorgaans als roerend goed (herzieningstermijn 5 jaar). Aftrek afhankelijk van gebruik.',
+                active: true, askQuestion: true,
+                questionText: 'Worden de laadpalen commercieel geexploiteerd (betaald laden) of gratis beschikbaar gesteld?',
+                questionType: 'keuze',
+                questionOptions: 'Commercieel / betaald laden (volledig aftrekbaar)\nGratis voor personeel (bestemmingsverhouding)\nGratis voor bezoekers/patienten (niet-aftrekbaar)\nMix commercieel en gratis (bestemmingsverhouding)'
+            },
+            {
+                id: 'r046', name: 'Duurzaamheid overig', priority: 15,
+                conditions: [{ field: 'categorie', operator: 'equals', value: 'duurzaamheid' }],
+                classification: 'pre-pro-rata', herzieningType: 'onroerend',
+                description: 'Overige duurzaamheidsinvesteringen: standaard als onroerend/gebouwgebonden, aftrek op basis van bestemmingsverhouding.',
+                active: true, askQuestion: true,
+                questionText: 'Is deze duurzaamheidsinvestering gebouwgebonden (onroerend) of los/verplaatsbaar (roerend)?',
+                questionType: 'keuze',
+                questionOptions: 'Gebouwgebonden / onroerend (herzieningstermijn 10 jaar)\nLos / verplaatsbaar / roerend (herzieningstermijn 5 jaar)'
+            },
+            // === INRICHTING ===
+            {
+                id: 'r050', name: 'Inrichting - zorgmeubilair', priority: 8,
+                conditions: [
+                    { field: 'categorie', operator: 'equals', value: 'inrichting' },
+                    { field: 'omschrijving', operator: 'contains', value: 'zorg' }
+                ],
+                classification: 'niet-aftrekbaar', herzieningType: 'roerend',
+                description: 'Zorgmeubilair (bedden, tilliften, etc.): direct bestemd voor vrijgestelde zorgverlening. Roerend goed.',
+                active: true, askQuestion: false, questionText: '', questionType: '', questionOptions: ''
+            },
+            {
+                id: 'r051', name: 'Inrichting - medische apparatuur', priority: 8,
+                conditions: [
+                    { field: 'categorie', operator: 'equals', value: 'inrichting' },
+                    { field: 'omschrijving', operator: 'contains', value: 'medisch' }
+                ],
+                classification: 'niet-aftrekbaar', herzieningType: 'roerend',
+                description: 'Medische apparatuur: direct bestemd voor vrijgestelde zorgverlening.',
+                active: true, askQuestion: false, questionText: '', questionType: '', questionOptions: ''
+            },
+            {
+                id: 'r052', name: 'Inrichting - kantoormeubilair', priority: 8,
+                conditions: [
+                    { field: 'categorie', operator: 'equals', value: 'inrichting' },
+                    { field: 'omschrijving', operator: 'contains', value: 'kantoor' }
+                ],
+                classification: 'pre-pro-rata', herzieningType: 'roerend',
+                description: 'Kantoormeubilair: roerend goed, pro rata aftrek via bestemmingsverhouding.',
+                active: true, askQuestion: false, questionText: '', questionType: '', questionOptions: ''
+            },
+            {
+                id: 'r053', name: 'Inrichting - overig', priority: 20,
+                conditions: [{ field: 'categorie', operator: 'equals', value: 'inrichting' }],
+                classification: 'pre-pro-rata', herzieningType: 'roerend',
+                description: 'Overige inrichting/inventaris: roerend goed (herzieningstermijn 5 jaar). Bestemming bepaalt aftrekbaarheid.',
+                active: true, askQuestion: true,
+                questionText: 'Wat is de bestemming van deze inrichting/inventaris?',
+                questionType: 'keuze',
+                questionOptions: 'Zorgafdelingen / patientenzorg (niet-aftrekbaar)\nKantoor / administratie (bestemmingsverhouding)\nRestaurant / keuken (aftrekbaar)\nAlgemene ruimtes (bestemmingsverhouding)'
+            },
+            // === ADVIES ===
+            {
+                id: 'r060', name: 'Advies - bouwbegeleiding', priority: 10,
+                conditions: [{ field: 'categorie', operator: 'equals', value: 'advies' }],
+                classification: 'pre-pro-rata', herzieningType: 'onroerend',
+                description: 'Advies- en begeleidingskosten (architect, bouwbegeleiding, fiscaal advies): volgen de bestemming van het bouwproject. Als gerelateerd aan het gehele gebouw: bestemmingsverhouding.',
+                active: true, askQuestion: true,
+                questionText: 'Heeft dit advies betrekking op het gehele bouwproject of op een specifiek onderdeel?',
+                questionType: 'keuze',
+                questionOptions: 'Gehele project (bestemmingsverhouding)\nAlleen zorggedeelte (niet-aftrekbaar)\nAlleen commercieel gedeelte (aftrekbaar)\nFiscaal/juridisch advies algemeen (bestemmingsverhouding)'
+            },
+            // === KEUKENINSTALLATIE ===
+            {
+                id: 'r070', name: 'Keukeninstallatie commercieel', priority: 5,
+                conditions: [
+                    { field: 'omschrijving', operator: 'contains', value: 'keuken' }
+                ],
+                classification: 'aftrekbaar', herzieningType: 'onroerend',
+                description: 'Professionele keukeninstallatie: als de keuken (mede) wordt gebruikt voor commerciele catering/restaurant is de BTW (deels) aftrekbaar.',
+                active: true, askQuestion: true,
+                questionText: 'Wordt de keuken (mede) gebruikt voor commerciele catering of een personeelsrestaurant met vergoeding?',
+                questionType: 'keuze',
+                questionOptions: 'Ja, volledig commercieel restaurant (volledig aftrekbaar)\nJa, deels commercieel, deels patientenvoeding (bestemmingsverhouding)\nNee, uitsluitend patientenvoeding (niet-aftrekbaar)'
             }
         ];
     }
 
-    var rules = null;
+    var regels = null;
 
-    function loadRules() {
+    function laadRegels() {
         try {
-            var stored = localStorage.getItem(RULES_KEY);
-            if (stored) {
-                rules = JSON.parse(stored);
+            var opgeslagen = localStorage.getItem(REGELS_SLEUTEL);
+            if (opgeslagen) {
+                regels = JSON.parse(opgeslagen);
             } else {
-                rules = getDefaultRules();
-                saveRules();
+                regels = getStandaardRegels();
+                slaRegelsOp();
             }
         } catch(e) {
-            rules = getDefaultRules();
+            regels = getStandaardRegels();
         }
-        return rules;
+        return regels;
     }
 
-    function saveRules() {
+    function slaRegelsOp() {
         try {
-            localStorage.setItem(RULES_KEY, JSON.stringify(rules));
+            localStorage.setItem(REGELS_SLEUTEL, JSON.stringify(regels));
         } catch(e) {
             console.error('Fout bij opslaan regels:', e);
         }
     }
 
-    function getRules() {
-        if (!rules) loadRules();
-        return rules;
+    function getRegels() { if (!regels) laadRegels(); return regels; }
+    function setRegels(nieuw) { regels = nieuw; slaRegelsOp(); }
+    function resetNaarStandaard() { regels = getStandaardRegels(); slaRegelsOp(); }
+
+    function voegRegelToe(regel) {
+        if (!regel.id) regel.id = App.Utils.generateId();
+        getRegels().push(regel);
+        slaRegelsOp();
     }
 
-    function setRules(newRules) {
-        rules = newRules;
-        saveRules();
-    }
-
-    function resetToDefaults() {
-        rules = getDefaultRules();
-        saveRules();
-    }
-
-    function addRule(rule) {
-        if (!rule.id) rule.id = App.Utils.generateId();
-        getRules().push(rule);
-        saveRules();
-    }
-
-    function updateRule(id, updates) {
-        var r = getRules();
+    function updateRegel(id, updates) {
+        var r = getRegels();
         for (var i = 0; i < r.length; i++) {
-            if (r[i].id === id) {
-                Object.assign(r[i], updates);
-                saveRules();
-                return r[i];
-            }
+            if (r[i].id === id) { Object.assign(r[i], updates); slaRegelsOp(); return r[i]; }
         }
         return null;
     }
 
-    function deleteRule(id) {
-        var r = getRules();
+    function verwijderRegel(id) {
+        var r = getRegels();
         for (var i = 0; i < r.length; i++) {
-            if (r[i].id === id) {
-                r.splice(i, 1);
-                saveRules();
-                return true;
-            }
+            if (r[i].id === id) { r.splice(i, 1); slaRegelsOp(); return true; }
         }
         return false;
     }
 
-    function getRule(id) {
-        var r = getRules();
+    function getRegel(id) {
+        var r = getRegels();
         for (var i = 0; i < r.length; i++) {
             if (r[i].id === id) return r[i];
         }
         return null;
     }
 
-    // Evaluate a single condition against a mutation
-    function evaluateCondition(condition, mutation) {
-        var fieldValue = String(mutation[condition.field] || '').trim();
-        var condValue = String(condition.value || '').trim();
+    // Evalueer een enkele voorwaarde
+    function evalueerVoorwaarde(voorwaarde, investering) {
+        var veldWaarde = String(investering[voorwaarde.field] || '').trim();
+        var voorwaardeWaarde = String(voorwaarde.value || '').trim();
 
-        switch (condition.operator) {
+        switch (voorwaarde.operator) {
             case 'equals':
-                return fieldValue.toLowerCase() === condValue.toLowerCase();
-
+                return veldWaarde.toLowerCase() === voorwaardeWaarde.toLowerCase();
             case 'contains':
-                return fieldValue.toLowerCase().indexOf(condValue.toLowerCase()) > -1;
-
+                return veldWaarde.toLowerCase().indexOf(voorwaardeWaarde.toLowerCase()) > -1;
             case 'starts_with':
-                return fieldValue.toLowerCase().indexOf(condValue.toLowerCase()) === 0;
-
-            case 'range':
-                // Format: "4000-4099" - checks if numeric value of field is in range
-                var parts = condValue.split('-');
-                if (parts.length !== 2) return false;
-                var low = parseInt(parts[0], 10);
-                var high = parseInt(parts[1], 10);
-                var val = parseInt(fieldValue, 10);
-                if (isNaN(low) || isNaN(high) || isNaN(val)) return false;
-                return val >= low && val <= high;
-
+                return veldWaarde.toLowerCase().indexOf(voorwaardeWaarde.toLowerCase()) === 0;
             case 'in':
-                // Comma separated list of values
-                var values = condValue.toLowerCase().split(',').map(function(v) { return v.trim(); });
-                return values.indexOf(fieldValue.toLowerCase()) > -1;
-
+                var waarden = voorwaardeWaarde.toLowerCase().split(',').map(function(v) { return v.trim(); });
+                return waarden.indexOf(veldWaarde.toLowerCase()) > -1;
             case 'not_empty':
-                return fieldValue.length > 0;
-
+                return veldWaarde.length > 0;
             case 'empty':
-                return fieldValue.length === 0;
-
+                return veldWaarde.length === 0;
             case 'greater_than':
-                return parseFloat(fieldValue) > parseFloat(condValue);
-
+                return parseFloat(veldWaarde) > parseFloat(voorwaardeWaarde);
             case 'less_than':
-                return parseFloat(fieldValue) < parseFloat(condValue);
-
+                return parseFloat(veldWaarde) < parseFloat(voorwaardeWaarde);
             default:
                 return false;
         }
     }
 
-    // Evaluate all conditions of a rule (AND logic)
-    function evaluateRule(rule, mutation) {
-        if (!rule.active) return false;
-        if (!rule.conditions || rule.conditions.length === 0) return false;
-
-        for (var i = 0; i < rule.conditions.length; i++) {
-            if (!evaluateCondition(rule.conditions[i], mutation)) {
-                return false;
-            }
+    // Evalueer alle voorwaarden van een regel (EN-logica)
+    function evalueerRegel(regel, investering) {
+        if (!regel.active) return false;
+        if (!regel.conditions || regel.conditions.length === 0) return false;
+        for (var i = 0; i < regel.conditions.length; i++) {
+            if (!evalueerVoorwaarde(regel.conditions[i], investering)) return false;
         }
         return true;
     }
 
-    // Classify a single mutation, returning the matching rule or null
-    function classify(mutation) {
-        var sortedRules = getRules().slice().sort(function(a, b) {
+    // Classificeer een investering, geeft de matchende regel terug
+    function classificeer(investering) {
+        var gesorteerd = getRegels().slice().sort(function(a, b) {
             return (a.priority || 50) - (b.priority || 50);
         });
-
-        for (var i = 0; i < sortedRules.length; i++) {
-            if (evaluateRule(sortedRules[i], mutation)) {
-                return sortedRules[i];
-            }
+        for (var i = 0; i < gesorteerd.length; i++) {
+            if (evalueerRegel(gesorteerd[i], investering)) return gesorteerd[i];
         }
         return null;
     }
 
-    // Check if a crediteur has a known classification
-    function classifyByCrediteur(mutation, crediteuren) {
-        if (!mutation.supplier) return null;
-        for (var i = 0; i < crediteuren.length; i++) {
-            if (crediteuren[i].code === mutation.supplier && crediteuren[i].classification) {
-                return crediteuren[i];
-            }
-        }
-        return null;
-    }
-
-    function conditionDescription(condition) {
-        var fieldLabels = {
-            'ledgerAccount': 'Grootboekrek.',
-            'ledgerName': 'Naam rekening',
-            'description': 'Omschrijving',
-            'amount': 'Bedrag',
-            'vatAmount': 'BTW bedrag',
-            'vatCode': 'BTW code',
-            'costCenter': 'Kostenplaats',
-            'supplier': 'Crediteur',
-            'supplierName': 'Naam crediteur'
+    function voorwaardeBeschrijving(voorwaarde) {
+        var veldLabels = {
+            'categorie': 'Categorie', 'projectType': 'Projecttype',
+            'omschrijving': 'Omschrijving', 'leverancier': 'Leverancier',
+            'bedragExclBTW': 'Bedrag', 'btwBedrag': 'BTW',
+            'btwPercentage': 'BTW%', 'subcategorie': 'Subcategorie',
+            'ruimte': 'Ruimte'
         };
         var opLabels = {
-            'equals': '=',
-            'contains': 'bevat',
-            'starts_with': 'begint met',
-            'range': 'bereik',
-            'in': 'in lijst',
-            'not_empty': 'niet leeg',
-            'empty': 'leeg',
-            'greater_than': '>',
-            'less_than': '<'
+            'equals': '=', 'contains': 'bevat', 'starts_with': 'begint met',
+            'in': 'in lijst', 'not_empty': 'niet leeg', 'empty': 'leeg',
+            'greater_than': '>', 'less_than': '<'
         };
-        var field = fieldLabels[condition.field] || condition.field;
-        var op = opLabels[condition.operator] || condition.operator;
-        var val = condition.value || '';
-        if (condition.operator === 'not_empty' || condition.operator === 'empty') {
-            return field + ' ' + op;
+        var veld = veldLabels[voorwaarde.field] || voorwaarde.field;
+        var op = opLabels[voorwaarde.operator] || voorwaarde.operator;
+        if (voorwaarde.operator === 'not_empty' || voorwaarde.operator === 'empty') {
+            return veld + ' ' + op;
         }
-        return field + ' ' + op + ' "' + val + '"';
+        return veld + ' ' + op + ' "' + (voorwaarde.value || '') + '"';
     }
 
     return {
-        getDefaultRules: getDefaultRules,
-        loadRules: loadRules,
-        saveRules: saveRules,
-        getRules: getRules,
-        setRules: setRules,
-        resetToDefaults: resetToDefaults,
-        addRule: addRule,
-        updateRule: updateRule,
-        deleteRule: deleteRule,
-        getRule: getRule,
-        classify: classify,
-        classifyByCrediteur: classifyByCrediteur,
-        evaluateCondition: evaluateCondition,
-        evaluateRule: evaluateRule,
-        conditionDescription: conditionDescription
+        getStandaardRegels: getStandaardRegels,
+        laadRegels: laadRegels, slaRegelsOp: slaRegelsOp,
+        getRegels: getRegels, setRegels: setRegels,
+        resetNaarStandaard: resetNaarStandaard,
+        voegRegelToe: voegRegelToe, updateRegel: updateRegel,
+        verwijderRegel: verwijderRegel, getRegel: getRegel,
+        classificeer: classificeer,
+        evalueerVoorwaarde: evalueerVoorwaarde,
+        evalueerRegel: evalueerRegel,
+        voorwaardeBeschrijving: voorwaardeBeschrijving
     };
 })();

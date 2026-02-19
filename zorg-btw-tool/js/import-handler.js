@@ -1,70 +1,54 @@
-/* === Import Handler - CSV import and column mapping === */
+/* === Import Handler - CSV import voor investeringsfacturen === */
 App.ImportHandler = (function() {
     'use strict';
 
     var U = App.Utils;
 
-    // Expected fields for mutations
-    var mutationFields = [
-        { key: 'date', label: 'Boekdatum', required: true },
-        { key: 'ledgerAccount', label: 'Grootboekrekening', required: true },
-        { key: 'ledgerName', label: 'Naam rekening', required: false },
-        { key: 'description', label: 'Omschrijving', required: false },
-        { key: 'amount', label: 'Bedrag', required: true },
-        { key: 'vatAmount', label: 'BTW bedrag', required: false },
-        { key: 'vatCode', label: 'BTW code', required: false },
-        { key: 'costCenter', label: 'Kostenplaats', required: false },
-        { key: 'supplier', label: 'Crediteur', required: false },
-        { key: 'supplierName', label: 'Naam crediteur', required: false },
-        { key: 'debitCredit', label: 'Debet/Credit', required: false },
-        { key: 'journalCode', label: 'Dagboek', required: false }
+    // Verwachte velden voor factuurregels
+    var factuurVelden = [
+        { key: 'factuurDatum', label: 'Factuurdatum', required: true },
+        { key: 'factuurNummer', label: 'Factuurnummer', required: false },
+        { key: 'leverancier', label: 'Leverancier', required: false },
+        { key: 'omschrijving', label: 'Omschrijving', required: true },
+        { key: 'projectType', label: 'Projecttype', required: false },
+        { key: 'categorie', label: 'Categorie', required: false },
+        { key: 'subcategorie', label: 'Subcategorie', required: false },
+        { key: 'bedragExclBTW', label: 'Bedrag excl. BTW', required: true },
+        { key: 'btwBedrag', label: 'BTW bedrag', required: false },
+        { key: 'btwPercentage', label: 'BTW percentage', required: false },
+        { key: 'ruimte', label: 'Ruimte/gebouwdeel', required: false }
     ];
 
-    // Expected fields for crediteuren
-    var crediteurFields = [
-        { key: 'code', label: 'Crediteurcode', required: true },
-        { key: 'name', label: 'Naam', required: true },
-        { key: 'type', label: 'Type', required: false },
-        { key: 'classification', label: 'BTW-classificatie', required: false },
-        { key: 'notes', label: 'Opmerkingen', required: false }
-    ];
-
-    // Auto-detect column mapping based on header names
-    function autoMapColumns(headers, fields) {
+    // Automatische kolomherkenning
+    function autoMapColumns(headers, velden) {
         var mapping = {};
-        var aliases = {
-            'date': ['boekdatum', 'datum', 'date', 'boekingsdatum', 'faktuurdatum', 'factuurdatum'],
-            'ledgerAccount': ['grootboekrekening', 'grootboek', 'rekening', 'rekeningnr', 'gbrek', 'account', 'gl_account', 'grootboeknr'],
-            'ledgerName': ['naam rekening', 'rekeningnaam', 'omschrijving rekening', 'gb naam', 'account_name'],
-            'description': ['omschrijving', 'description', 'boekstuk', 'tekst', 'memo'],
-            'amount': ['bedrag', 'amount', 'totaal', 'bedrag incl', 'bedrag excl', 'netto'],
-            'vatAmount': ['btw bedrag', 'btw', 'vat', 'btw_bedrag', 'ob bedrag', 'belasting'],
-            'vatCode': ['btw code', 'btw_code', 'btwcode', 'vat_code', 'ob code', 'belastingcode'],
-            'costCenter': ['kostenplaats', 'kp', 'cost_center', 'costcenter', 'afdeling'],
-            'supplier': ['crediteur', 'crediteurcode', 'crediteur_code', 'leverancier', 'supplier', 'crediteurnr'],
-            'supplierName': ['naam crediteur', 'crediteur naam', 'leveranciernaam', 'supplier_name'],
-            'debitCredit': ['debet/credit', 'dc', 'd/c', 'debet_credit', 'soort'],
-            'journalCode': ['dagboek', 'dagboekcode', 'journal', 'boekstuk'],
-            'code': ['crediteurcode', 'crediteur', 'code', 'leveranciercode', 'nummer', 'crediteurnr'],
-            'name': ['naam', 'name', 'leveranciernaam', 'crediteur naam', 'omschrijving'],
-            'type': ['type', 'soort', 'categorie', 'category'],
-            'classification': ['btw-classificatie', 'classificatie', 'btw classificatie', 'btw_classificatie', 'aftrek'],
-            'notes': ['opmerkingen', 'notities', 'notes', 'toelichting', 'opmerking']
+        var aliassen = {
+            'factuurDatum': ['factuurdatum', 'datum', 'date', 'boekdatum', 'faktuurdatum'],
+            'factuurNummer': ['factuurnummer', 'factuur', 'factuurnr', 'nummer', 'invoice'],
+            'leverancier': ['leverancier', 'aannemer', 'crediteur', 'supplier', 'naam leverancier', 'opdrachtnemer'],
+            'omschrijving': ['omschrijving', 'description', 'werkzaamheden', 'tekst', 'toelichting', 'post'],
+            'projectType': ['projecttype', 'project type', 'type project', 'type', 'soort project'],
+            'categorie': ['categorie', 'category', 'kostensoort', 'kostengroep', 'hoofdgroep'],
+            'subcategorie': ['subcategorie', 'sub categorie', 'deelpost', 'subgroep'],
+            'bedragExclBTW': ['bedrag excl', 'bedrag', 'excl btw', 'netto', 'amount', 'bedrag excl. btw', 'kosten'],
+            'btwBedrag': ['btw bedrag', 'btw', 'vat', 'omzetbelasting', 'btw_bedrag'],
+            'btwPercentage': ['btw percentage', 'btw%', 'btw perc', 'tarief', 'btw tarief'],
+            'ruimte': ['ruimte', 'gebouwdeel', 'locatie', 'verdieping', 'vleugel']
         };
 
-        var normalizedHeaders = headers.map(function(h) {
+        var genormaliseerd = headers.map(function(h) {
             return h.toLowerCase().trim().replace(/[_\-]/g, ' ');
         });
 
-        fields.forEach(function(field) {
-            var fieldAliases = aliases[field.key] || [field.key];
-            mapping[field.key] = -1; // Not mapped
+        velden.forEach(function(veld) {
+            var veldAliassen = aliassen[veld.key] || [veld.key];
+            mapping[veld.key] = -1;
 
-            for (var i = 0; i < normalizedHeaders.length; i++) {
-                for (var j = 0; j < fieldAliases.length; j++) {
-                    if (normalizedHeaders[i] === fieldAliases[j] ||
-                        normalizedHeaders[i].indexOf(fieldAliases[j]) > -1) {
-                        mapping[field.key] = i;
+            for (var i = 0; i < genormaliseerd.length; i++) {
+                for (var j = 0; j < veldAliassen.length; j++) {
+                    if (genormaliseerd[i] === veldAliassen[j] ||
+                        genormaliseerd[i].indexOf(veldAliassen[j]) > -1) {
+                        mapping[veld.key] = i;
                         return;
                     }
                 }
@@ -74,34 +58,32 @@ App.ImportHandler = (function() {
         return mapping;
     }
 
-    function renderMapping(containerId, headers, fields, mapping) {
+    function renderMapping(containerId, headers, velden, mapping) {
         var container = document.getElementById(containerId);
         container.innerHTML = '';
 
-        fields.forEach(function(field) {
+        velden.forEach(function(veld) {
             var item = document.createElement('div');
             item.className = 'mapping-item';
 
             var label = document.createElement('label');
-            label.textContent = field.label + (field.required ? ' *' : '');
+            label.textContent = veld.label + (veld.required ? ' *' : '');
             item.appendChild(label);
 
             var select = document.createElement('select');
             select.className = 'form-select';
-            select.dataset.field = field.key;
+            select.dataset.field = veld.key;
 
-            var optNone = document.createElement('option');
-            optNone.value = '-1';
-            optNone.textContent = '-- Niet toewijzen --';
-            select.appendChild(optNone);
+            var optGeenKeuze = document.createElement('option');
+            optGeenKeuze.value = '-1';
+            optGeenKeuze.textContent = '-- Niet toewijzen --';
+            select.appendChild(optGeenKeuze);
 
             headers.forEach(function(h, idx) {
                 var opt = document.createElement('option');
                 opt.value = idx;
                 opt.textContent = h;
-                if (mapping[field.key] === idx) {
-                    opt.selected = true;
-                }
+                if (mapping[veld.key] === idx) opt.selected = true;
                 select.appendChild(opt);
             });
 
@@ -120,88 +102,76 @@ App.ImportHandler = (function() {
         return mapping;
     }
 
-    function parseMutations(rows, mapping) {
-        var mutations = [];
-        for (var i = 0; i < rows.length; i++) {
-            var row = rows[i];
-            var m = {
-                id: U.generateId(),
-                date: mapping.date >= 0 ? U.parseDate(row[mapping.date] || '') : '',
-                ledgerAccount: mapping.ledgerAccount >= 0 ? String(row[mapping.ledgerAccount] || '').trim() : '',
-                ledgerName: mapping.ledgerName >= 0 ? String(row[mapping.ledgerName] || '').trim() : '',
-                description: mapping.description >= 0 ? String(row[mapping.description] || '').trim() : '',
-                amount: mapping.amount >= 0 ? U.parseAmount(row[mapping.amount]) : 0,
-                vatAmount: mapping.vatAmount >= 0 ? U.parseAmount(row[mapping.vatAmount]) : 0,
-                vatCode: mapping.vatCode >= 0 ? String(row[mapping.vatCode] || '').trim() : '',
-                costCenter: mapping.costCenter >= 0 ? String(row[mapping.costCenter] || '').trim() : '',
-                supplier: mapping.supplier >= 0 ? String(row[mapping.supplier] || '').trim() : '',
-                supplierName: mapping.supplierName >= 0 ? String(row[mapping.supplierName] || '').trim() : '',
-                debitCredit: mapping.debitCredit >= 0 ? String(row[mapping.debitCredit] || '').trim() : '',
-                journalCode: mapping.journalCode >= 0 ? String(row[mapping.journalCode] || '').trim() : '',
-                // Assessment fields
-                classification: '',
-                confidence: '',
-                deductionPercentage: null,
-                preProRataPercentage: null,
-                rule: '',
-                manualOverride: false,
-                notes: '',
-                questionIds: [],
-                status: ''
-            };
-
-            // Only add if ledgerAccount or amount is present
-            if (m.ledgerAccount || m.amount !== 0) {
-                mutations.push(m);
-            }
-        }
-        return mutations;
-    }
-
-    function parseCrediteuren(rows, mapping) {
-        var crediteuren = [];
-        for (var i = 0; i < rows.length; i++) {
-            var row = rows[i];
-            var c = {
-                code: mapping.code >= 0 ? String(row[mapping.code] || '').trim() : '',
-                name: mapping.name >= 0 ? String(row[mapping.name] || '').trim() : '',
-                type: mapping.type >= 0 ? String(row[mapping.type] || '').trim() : '',
-                classification: mapping.classification >= 0 ? normalizeClassification(row[mapping.classification]) : '',
-                notes: mapping.notes >= 0 ? String(row[mapping.notes] || '').trim() : ''
-            };
-            if (c.code) {
-                crediteuren.push(c);
-            }
-        }
-        return crediteuren;
-    }
-
-    function normalizeClassification(val) {
+    function normaliseProjectType(val) {
         if (!val) return '';
         val = String(val).toLowerCase().trim();
-        var map = {
-            'aftrekbaar': 'aftrekbaar',
-            'volledig aftrekbaar': 'aftrekbaar',
-            'full': 'aftrekbaar',
-            'niet-aftrekbaar': 'niet-aftrekbaar',
-            'niet aftrekbaar': 'niet-aftrekbaar',
-            'vrijgesteld': 'niet-aftrekbaar',
-            'exempt': 'niet-aftrekbaar',
-            'none': 'niet-aftrekbaar',
-            'pro rata': 'pro-rata',
-            'pro-rata': 'pro-rata',
-            'prorata': 'pro-rata',
-            'mixed': 'pro-rata',
-            'pre-pro-rata': 'pre-pro-rata',
-            'pre pro rata': 'pre-pro-rata',
-            'preprorata': 'pre-pro-rata',
-            'deels': 'pre-pro-rata'
-        };
-        return map[val] || '';
+        if (val.indexOf('nieuwbouw') > -1 || val.indexOf('new') > -1) return 'nieuwbouw';
+        if (val.indexOf('verbouw') > -1 || val.indexOf('renovatie') > -1 || val.indexOf('renov') > -1) return 'verbouw';
+        if (val.indexOf('duurzaam') > -1 || val.indexOf('verduurzam') > -1 || val.indexOf('energie') > -1 || val.indexOf('sustain') > -1) return 'verduurzaming';
+        return '';
     }
 
-    function renderPreviewTable(tableId, headers, rows, maxRows) {
-        maxRows = maxRows || 5;
+    function normaliseCategorie(val) {
+        if (!val) return '';
+        val = String(val).toLowerCase().trim();
+        if (val.indexOf('bouwkund') > -1 || val.indexOf('constructie') > -1 || val.indexOf('ruwbouw') > -1) return 'bouwkundig';
+        if (val.indexOf('installat') > -1 || val.indexOf('e/w') > -1 || val.indexOf('elektra') > -1 || val.indexOf('sanitair') > -1) return 'installaties';
+        if (val.indexOf('afbouw') > -1 || val.indexOf('interieur') > -1 || val.indexOf('vloer') > -1 || val.indexOf('plafond') > -1) return 'afbouw';
+        if (val.indexOf('terrein') > -1 || val.indexOf('buiten') > -1 || val.indexOf('parkeer') > -1 || val.indexOf('tuin') > -1) return 'terrein';
+        if (val.indexOf('duurzaam') > -1 || val.indexOf('zonnepa') > -1 || val.indexOf('isolatie') > -1 || val.indexOf('warmtepomp') > -1 || val.indexOf('led') > -1 || val.indexOf('laadp') > -1) return 'duurzaamheid';
+        if (val.indexOf('inricht') > -1 || val.indexOf('inventar') > -1 || val.indexOf('meubil') > -1 || val.indexOf('apparatuur') > -1) return 'inrichting';
+        if (val.indexOf('advies') > -1 || val.indexOf('architec') > -1 || val.indexOf('begeleid') > -1 || val.indexOf('directie') > -1) return 'advies';
+        return '';
+    }
+
+    function parseFactuurregels(rows, mapping) {
+        var regels = [];
+        for (var i = 0; i < rows.length; i++) {
+            var row = rows[i];
+            var r = {
+                id: U.generateId(),
+                factuurDatum: mapping.factuurDatum >= 0 ? U.parseDate(row[mapping.factuurDatum] || '') : '',
+                factuurNummer: mapping.factuurNummer >= 0 ? String(row[mapping.factuurNummer] || '').trim() : '',
+                leverancier: mapping.leverancier >= 0 ? String(row[mapping.leverancier] || '').trim() : '',
+                omschrijving: mapping.omschrijving >= 0 ? String(row[mapping.omschrijving] || '').trim() : '',
+                projectType: mapping.projectType >= 0 ? normaliseProjectType(row[mapping.projectType]) : '',
+                categorie: mapping.categorie >= 0 ? normaliseCategorie(row[mapping.categorie]) : '',
+                subcategorie: mapping.subcategorie >= 0 ? String(row[mapping.subcategorie] || '').trim() : '',
+                bedragExclBTW: mapping.bedragExclBTW >= 0 ? U.parseAmount(row[mapping.bedragExclBTW]) : 0,
+                btwBedrag: mapping.btwBedrag >= 0 ? U.parseAmount(row[mapping.btwBedrag]) : 0,
+                btwPercentage: mapping.btwPercentage >= 0 ? U.parseAmount(row[mapping.btwPercentage]) : 21,
+                ruimte: mapping.ruimte >= 0 ? String(row[mapping.ruimte] || '').trim() : '',
+                // Beoordelingsvelden
+                classification: '',
+                confidence: '',
+                status: '',
+                herzieningType: 'onroerend',
+                herzieningPeriode: 10,
+                bestemmingZorgPct: 0,
+                bestemmingKantoorPct: 0,
+                bestemmingCommercieelPct: 0,
+                bestemmingAlgemeenPct: 0,
+                aftrekbareBTW: 0,
+                regel: '',
+                handmatig: false,
+                notities: '',
+                vraagIds: []
+            };
+
+            // Automatisch BTW berekenen als niet opgegeven
+            if (r.btwBedrag === 0 && r.bedragExclBTW !== 0 && r.btwPercentage > 0) {
+                r.btwBedrag = r.bedragExclBTW * (r.btwPercentage / 100);
+            }
+
+            if (r.omschrijving || r.bedragExclBTW !== 0) {
+                regels.push(r);
+            }
+        }
+        return regels;
+    }
+
+    function renderPreviewTable(tableId, headers, rows, maxRijen) {
+        maxRijen = maxRijen || 5;
         var table = document.getElementById(tableId);
         var thead = table.querySelector('thead');
         var tbody = table.querySelector('tbody');
@@ -210,81 +180,53 @@ App.ImportHandler = (function() {
             return '<th>' + U.escapeHtml(h) + '</th>';
         }).join('') + '</tr>';
 
-        tbody.innerHTML = rows.slice(0, maxRows).map(function(row) {
-            return '<tr>' + row.map(function(cell) {
-                return '<td>' + U.escapeHtml(String(cell || '')) + '</td>';
+        tbody.innerHTML = rows.slice(0, maxRijen).map(function(row) {
+            return '<tr>' + row.map(function(cel) {
+                return '<td>' + U.escapeHtml(String(cel || '')) + '</td>';
             }).join('') + '</tr>';
         }).join('');
 
-        if (rows.length > maxRows) {
+        if (rows.length > maxRijen) {
             tbody.innerHTML += '<tr><td colspan="' + headers.length + '" class="text-muted text-center">... en ' +
-                (rows.length - maxRows) + ' meer regels</td></tr>';
+                (rows.length - maxRijen) + ' meer regels</td></tr>';
         }
     }
 
-    function generateExampleMutations() {
-        var header = ['Boekdatum', 'Grootboekrekening', 'Naam rekening', 'Omschrijving', 'Bedrag', 'BTW bedrag', 'BTW code', 'Kostenplaats', 'Crediteur', 'Naam crediteur'];
-        var rows = [
-            ['15-01-2024', '4100', 'Huurkosten', 'Huur kantoor/zorgpand Q1 2024', '75000,00', '15750,00', '21', 'KP001', 'C001', 'Vastgoed BV'],
-            ['15-01-2024', '4110', 'Energiekosten', 'Gas en elektra januari', '8500,00', '1785,00', '21', 'KP001', 'C002', 'Eneco Zakelijk'],
-            ['20-01-2024', '4200', 'Kantoorbenodigdheden', 'Kantoorartikelen Q1', '1250,00', '262,50', '21', 'KP003', 'C003', 'Staples BV'],
-            ['22-01-2024', '4400', 'Medische middelen', 'Verbandmaterialen januari', '4800,00', '1008,00', '21', 'KP010', 'C010', 'Mediq'],
-            ['25-01-2024', '4410', 'Geneesmiddelen', 'Medicijnen voorraad jan', '12500,00', '2625,00', '21', 'KP010', 'C011', 'Brocacef'],
-            ['28-01-2024', '4300', 'Accountantskosten', 'Controle jaarrekening 2023', '15000,00', '3150,00', '21', 'KP003', 'C020', 'BDO Audit'],
-            ['01-02-2024', '4500', 'Keukenkosten', 'Levensmiddelen februari', '6200,00', '558,00', '9', 'KP005', 'C030', 'Sligro Food Group'],
-            ['05-02-2024', '4700', 'ICT hardware', 'Laptops administratie', '8900,00', '1869,00', '21', 'KP003', 'C040', 'Dell BV'],
-            ['10-02-2024', '4030', 'Overige personeelskosten', 'Bedrijfskleding verpleging', '3200,00', '672,00', '21', 'KP002', 'C050', 'Textiel Service BV'],
-            ['15-02-2024', '4310', 'Advieskosten', 'Juridisch advies fusie', '22000,00', '4620,00', '21', 'KP003', 'C060', 'Loyens & Loeff'],
-            ['18-02-2024', '4120', 'Schoonmaakkosten', 'Schoonmaak februari', '9500,00', '1995,00', '21', 'KP001', 'C070', 'CSU Cleaning'],
-            ['20-02-2024', '4600', 'Onderhoud installaties', 'Onderhoud CV/airco', '5400,00', '1134,00', '21', 'KP001', 'C080', 'Wolter & Dros'],
-            ['25-02-2024', '4800', 'Rentekosten', 'Rente hypotheek Q1', '18000,00', '0,00', '0', 'KP003', 'C090', 'ABN AMRO'],
-            ['01-03-2024', '4210', 'Telefoonkosten', 'Telefonie en internet maart', '3800,00', '798,00', '21', 'KP003', 'C041', 'KPN Zakelijk'],
-            ['05-03-2024', '4420', 'Laboratoriumkosten', 'Labonderzoeken Q1', '7500,00', '1575,00', '21', 'KP010', 'C100', 'PAMM Laboratorium'],
-            ['10-03-2024', '4050', 'Opleidingskosten', 'Bijscholing verpleegkundig personeel', '4500,00', '945,00', '21', 'KP002', 'C110', 'V&VN'],
-            ['15-03-2024', '4130', 'Onderhoud gebouw', 'Schilderwerk buitenzijde', '28000,00', '5880,00', '21', 'KP001', 'C120', 'Van der Werf Schilders'],
-            ['20-03-2024', '8000', 'Omzet zorg WLZ', 'Productie WLZ maart', '-185000,00', '0,00', '0', '', '', 'Zorgkantoor'],
-            ['20-03-2024', '8100', 'Omzet catering extern', 'Omzet restaurant medewerkers', '-12500,00', '-2625,00', '21', 'KP005', '', 'Diverse'],
-            ['25-03-2024', '4330', 'Bestuurskosten', 'Representatiekosten RvB', '2800,00', '588,00', '21', 'KP003', 'C130', 'Hotel Okura']
+    function genereerVoorbeeldFacturen() {
+        var header = ['Factuurdatum', 'Factuurnummer', 'Leverancier', 'Omschrijving', 'Projecttype', 'Categorie', 'Bedrag excl. BTW', 'BTW bedrag', 'BTW %'];
+        var regels = [
+            ['15-01-2024', 'FN-2024-001', 'Bouwbedrijf Van Dam BV', 'Heiwerkzaamheden nieuwbouw', 'Nieuwbouw', 'Bouwkundig', '285000,00', '59850,00', '21'],
+            ['22-01-2024', 'FN-2024-002', 'Bouwbedrijf Van Dam BV', 'Betonwerk fundering', 'Nieuwbouw', 'Bouwkundig', '195000,00', '40950,00', '21'],
+            ['05-02-2024', 'FN-2024-003', 'Architectenbureau MVSA', 'Architectkosten ontwerp fase', 'Nieuwbouw', 'Advies', '125000,00', '26250,00', '21'],
+            ['12-02-2024', 'FN-2024-004', 'Installatiebedrijf Wolter & Dros', 'HVAC installatie zorgvleugel', 'Nieuwbouw', 'Installaties', '320000,00', '67200,00', '21'],
+            ['20-02-2024', 'FN-2024-005', 'Installatiebedrijf Wolter & Dros', 'Elektra-installatie compleet', 'Nieuwbouw', 'Installaties', '175000,00', '36750,00', '21'],
+            ['01-03-2024', 'FN-2024-006', 'Bouwbedrijf Van Dam BV', 'Metselwerk gevels', 'Nieuwbouw', 'Bouwkundig', '165000,00', '34650,00', '21'],
+            ['15-03-2024', 'FN-2024-007', 'Duurzaam Installeren BV', 'Zonnepanelen dak (450 panelen)', 'Verduurzaming', 'Duurzaamheid', '180000,00', '37800,00', '21'],
+            ['20-03-2024', 'FN-2024-008', 'Duurzaam Installeren BV', 'Warmtepompen (WKO installatie)', 'Verduurzaming', 'Duurzaamheid', '250000,00', '52500,00', '21'],
+            ['01-04-2024', 'FN-2024-009', 'Isolatie Expert BV', 'Gevelisolatie (Rc 6.5)', 'Verduurzaming', 'Duurzaamheid', '95000,00', '19950,00', '21'],
+            ['10-04-2024', 'FN-2024-010', 'Isolatie Expert BV', 'Dakisolatie (Rc 6.5)', 'Verduurzaming', 'Duurzaamheid', '78000,00', '16380,00', '21'],
+            ['15-04-2024', 'FN-2024-011', 'LED Verlichting BV', 'LED verlichting gehele gebouw', 'Verduurzaming', 'Duurzaamheid', '62000,00', '13020,00', '21'],
+            ['20-04-2024', 'FN-2024-012', 'Afbouw Plus BV', 'Systeemwanden verpleegafdelingen', 'Nieuwbouw', 'Afbouw', '145000,00', '30450,00', '21'],
+            ['01-05-2024', 'FN-2024-013', 'Afbouw Plus BV', 'Plafonds en vloeren kantoorgedeelte', 'Nieuwbouw', 'Afbouw', '88000,00', '18480,00', '21'],
+            ['10-05-2024', 'FN-2024-014', 'Keuken & Catering Techniek BV', 'Professionele keukeninstallatie', 'Nieuwbouw', 'Installaties', '125000,00', '26250,00', '21'],
+            ['15-05-2024', 'FN-2024-015', 'GreenParking BV', 'Laadpalen parkeerterrein (10 stuks)', 'Verduurzaming', 'Duurzaamheid', '45000,00', '9450,00', '21'],
+            ['20-05-2024', 'FN-2024-016', 'Terrein & Groen BV', 'Bestrating en groenvoorziening', 'Nieuwbouw', 'Terrein', '95000,00', '19950,00', '21'],
+            ['01-06-2024', 'FN-2024-017', 'Medisch Meubilair BV', 'Zorgmeubilair verpleegafdelingen', 'Nieuwbouw', 'Inrichting', '210000,00', '44100,00', '21'],
+            ['05-06-2024', 'FN-2024-018', 'Kantoorinrichting BV', 'Kantoormeubilair administratie', 'Nieuwbouw', 'Inrichting', '35000,00', '7350,00', '21'],
+            ['10-06-2024', 'FN-2024-019', 'Bouwbedrijf Jansen', 'Verbouw bestaande receptie', 'Verbouw', 'Bouwkundig', '68000,00', '14280,00', '21'],
+            ['15-06-2024', 'FN-2024-020', 'Adviesbureau Fiscaal BV', 'Fiscaal advies BTW-positie nieuwbouw', 'Nieuwbouw', 'Advies', '18000,00', '3780,00', '21']
         ];
 
-        return U.arrayToCSV([header].concat(rows));
-    }
-
-    function generateExampleCrediteuren() {
-        var header = ['Crediteurcode', 'Naam', 'Type', 'BTW-classificatie', 'Opmerkingen'];
-        var rows = [
-            ['C001', 'Vastgoed BV', 'Huisvesting', 'pre-pro-rata', 'Verhuurder kantoor/zorgpand - 30% kantoor, 70% zorg'],
-            ['C002', 'Eneco Zakelijk', 'Energie', 'pre-pro-rata', 'Energieleverancier gehele pand'],
-            ['C003', 'Staples BV', 'Kantoor', 'pro rata', 'Kantoorartikelen'],
-            ['C010', 'Mediq', 'Medisch', 'niet-aftrekbaar', 'Leverancier medische middelen'],
-            ['C011', 'Brocacef', 'Medisch', 'niet-aftrekbaar', 'Geneesmiddelen leverancier'],
-            ['C020', 'BDO Audit', 'Advies', 'pro rata', 'Accountant'],
-            ['C030', 'Sligro Food Group', 'Voeding', '', 'Vraag: patient of medewerker voeding?'],
-            ['C040', 'Dell BV', 'ICT', 'pro rata', 'Hardware leverancier'],
-            ['C050', 'Textiel Service BV', 'Personeel', '', 'Vraag: zorgpersoneel of kantoor?'],
-            ['C060', 'Loyens & Loeff', 'Advies', '', 'Afhankelijk van adviesonderwerp'],
-            ['C070', 'CSU Cleaning', 'Facilitair', 'pre-pro-rata', 'Schoonmaak gehele pand'],
-            ['C080', 'Wolter & Dros', 'Techniek', 'pre-pro-rata', 'Onderhoud installaties'],
-            ['C090', 'ABN AMRO', 'Financieel', 'niet-aftrekbaar', 'Bancaire kosten vrijgesteld'],
-            ['C100', 'PAMM Laboratorium', 'Medisch', 'niet-aftrekbaar', 'Laboratoriumonderzoeken'],
-            ['C110', 'V&VN', 'Opleiding', 'niet-aftrekbaar', 'Opleiding zorgpersoneel'],
-            ['C120', 'Van der Werf Schilders', 'Onderhoud', 'pre-pro-rata', 'Onderhoud pand'],
-            ['C130', 'Hotel Okura', 'Representatie', 'pro rata', 'Bestuurskosten']
-        ];
-
-        return U.arrayToCSV([header].concat(rows));
+        return U.arrayToCSV([header].concat(regels));
     }
 
     return {
-        mutationFields: mutationFields,
-        crediteurFields: crediteurFields,
+        factuurVelden: factuurVelden,
         autoMapColumns: autoMapColumns,
         renderMapping: renderMapping,
         getMapping: getMapping,
-        parseMutations: parseMutations,
-        parseCrediteuren: parseCrediteuren,
+        parseFactuurregels: parseFactuurregels,
         renderPreviewTable: renderPreviewTable,
-        generateExampleMutations: generateExampleMutations,
-        generateExampleCrediteuren: generateExampleCrediteuren
+        genereerVoorbeeldFacturen: genereerVoorbeeldFacturen
     };
 })();
