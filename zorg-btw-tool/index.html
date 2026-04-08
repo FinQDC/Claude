@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BTW Investeringstool Zorg - Nieuwbouw, Verbouw &amp; Duurzaamheid</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="app">
+        <header class="app-header">
+            <div class="header-left">
+                <div class="logo">&#9962;</div>
+                <div class="header-title">
+                    <h1>BTW Investeringstool Zorg</h1>
+                    <span class="subtitle">Nieuwbouw, verbouw &amp; duurzaamheidsinvesteringen</span>
+                </div>
+            </div>
+            <div class="header-right">
+                <span class="project-name" id="projectName">Geen project</span>
+                <button class="btn btn-sm btn-outline" id="btnNewProject" title="Nieuw project">+ Nieuw</button>
+                <button class="btn btn-sm btn-outline" id="btnSaveProject" title="Project opslaan">Opslaan</button>
+            </div>
+        </header>
+
+        <nav class="main-nav">
+            <button class="nav-btn active" data-tab="dashboard">
+                <span class="nav-icon">&#9632;</span> Dashboard
+            </button>
+            <button class="nav-btn" data-tab="ruimtes">
+                <span class="nav-icon">&#9645;</span> Ruimtes
+            </button>
+            <button class="nav-btn" data-tab="import">
+                <span class="nav-icon">&#8593;</span> Import
+            </button>
+            <button class="nav-btn" data-tab="investeringen">
+                <span class="nav-icon">&#9776;</span> Investeringen
+                <span class="badge" id="badgeInvesteringen">0</span>
+            </button>
+            <button class="nav-btn" data-tab="vragen">
+                <span class="nav-icon">?</span> Vragen
+                <span class="badge badge-warning" id="badgeVragen">0</span>
+            </button>
+            <button class="nav-btn" data-tab="rapportage">
+                <span class="nav-icon">&#9998;</span> Rapportage
+            </button>
+            <button class="nav-btn" data-tab="instellingen">
+                <span class="nav-icon">&#9881;</span> Instellingen
+            </button>
+        </nav>
+
+        <main class="app-content">
+            <!-- ===== Dashboard ===== -->
+            <section id="tab-dashboard" class="tab-content active">
+                <h2>Overzicht investeringsproject</h2>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-value" id="statTotaalRegels">0</div>
+                        <div class="stat-label">Factuurregels</div>
+                    </div>
+                    <div class="stat-card stat-card-green">
+                        <div class="stat-value" id="statAftrekbaar">0</div>
+                        <div class="stat-label">Volledig aftrekbaar</div>
+                    </div>
+                    <div class="stat-card stat-card-red">
+                        <div class="stat-value" id="statNietAftrekbaar">0</div>
+                        <div class="stat-label">Niet-aftrekbaar</div>
+                    </div>
+                    <div class="stat-card stat-card-purple">
+                        <div class="stat-value" id="statPreProRata">0</div>
+                        <div class="stat-label">Pre-pro-rata (bestemming)</div>
+                    </div>
+                    <div class="stat-card stat-card-blue">
+                        <div class="stat-value" id="statTotaalBTW">&euro; 0</div>
+                        <div class="stat-label">Totaal BTW</div>
+                    </div>
+                    <div class="stat-card stat-card-orange">
+                        <div class="stat-value" id="statOpenVragen">0</div>
+                        <div class="stat-label">Open vragen</div>
+                    </div>
+                </div>
+
+                <div class="dashboard-grid">
+                    <div class="card">
+                        <h3>BTW-aftrek per categorie</h3>
+                        <div id="dashboardSummary">
+                            <p class="text-muted">Importeer factuurregels om het overzicht te vullen.</p>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <h3>Verdeling per projecttype</h3>
+                        <div id="classificationChart">
+                            <p class="text-muted">Geen gegevens beschikbaar.</p>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <h3>Recente activiteit</h3>
+                        <div id="recentActivity">
+                            <p class="text-muted">Nog geen activiteit.</p>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <h3>Aandachtspunten</h3>
+                        <div id="attentionPoints">
+                            <p class="text-muted">Geen aandachtspunten.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ===== Ruimtes / Bestemmingen ===== -->
+            <section id="tab-ruimtes" class="tab-content">
+                <div class="section-header">
+                    <h2>Ruimtes &amp; bestemmingen</h2>
+                    <button class="btn btn-primary" id="btnAddRuimte">+ Ruimte toevoegen</button>
+                </div>
+                <p style="margin-bottom:1rem;">Definieer de ruimtes/gebouwdelen en hun bestemming. Dit wordt gebruikt voor de pre-pro-rata berekening van de BTW-aftrek op investeringen.</p>
+
+                <div class="card" style="margin-bottom:1rem;">
+                    <h3>Bestemmingsoverzicht</h3>
+                    <div class="bestemming-summary" id="bestemmingSummary">
+                        <p class="text-muted">Voeg ruimtes toe om de bestemmingsverdeling te berekenen.</p>
+                    </div>
+                </div>
+
+                <div class="table-scroll">
+                    <table id="ruimtesTable" class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Ruimte</th>
+                                <th class="num">Oppervlakte (m&sup2;)</th>
+                                <th>Bestemming</th>
+                                <th>Toelichting</th>
+                                <th>Acties</th>
+                            </tr>
+                        </thead>
+                        <tbody id="ruimtesBody">
+                            <tr><td colspan="5" class="text-center text-muted">Nog geen ruimtes gedefinieerd.</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- ===== Import ===== -->
+            <section id="tab-import" class="tab-content">
+                <h2>Investeringsfacturen importeren</h2>
+                <div class="import-grid">
+                    <div class="card">
+                        <h3>Factuurregels importeren (CSV)</h3>
+                        <p>Upload een CSV-bestand met factuurregels van uw bouw-, verbouw- of duurzaamheidsproject:</p>
+                        <div class="column-info">
+                            <span class="tag">Factuurdatum</span>
+                            <span class="tag">Factuurnummer</span>
+                            <span class="tag">Leverancier</span>
+                            <span class="tag">Omschrijving</span>
+                            <span class="tag">Categorie</span>
+                            <span class="tag">Bedrag excl. BTW</span>
+                            <span class="tag">BTW bedrag</span>
+                            <span class="tag">BTW %</span>
+                            <span class="tag">Projecttype</span>
+                        </div>
+                        <div class="upload-area" id="uploadFacturen">
+                            <div class="upload-icon">&#128196;</div>
+                            <p>Sleep een CSV-bestand hierheen of klik om te selecteren</p>
+                            <input type="file" id="fileFacturen" accept=".csv,.txt" hidden>
+                            <button class="btn btn-primary" id="btnSelectFacturen">Bestand selecteren</button>
+                        </div>
+                        <div id="facturenPreview" class="preview-container" style="display:none;">
+                            <h4>Voorbeeld van geimporteerde regels</h4>
+                            <div class="mapping-section" id="factuurMappingSection">
+                                <h4>Kolomtoewijzing</h4>
+                                <p>Wijs de kolommen uit uw bestand toe aan de juiste velden:</p>
+                                <div id="factuurMapping" class="mapping-grid"></div>
+                            </div>
+                            <div class="table-scroll">
+                                <table id="facturenPreviewTable" class="data-table">
+                                    <thead></thead>
+                                    <tbody></tbody>
+                                </table>
+                            </div>
+                            <div class="import-actions">
+                                <button class="btn btn-primary" id="btnImportFacturen">Importeren en beoordelen</button>
+                                <button class="btn btn-outline" id="btnCancelFacturen">Annuleren</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <h3>Handmatige invoer</h3>
+                        <p>Voeg individuele factuurregels handmatig toe:</p>
+                        <div class="form-group">
+                            <label for="manualDatum">Factuurdatum</label>
+                            <input type="date" id="manualDatum" class="form-input">
+                        </div>
+                        <div class="form-group">
+                            <label for="manualFactuurNr">Factuurnummer</label>
+                            <input type="text" id="manualFactuurNr" class="form-input" placeholder="FN-2024-001">
+                        </div>
+                        <div class="form-group">
+                            <label for="manualLeverancier">Leverancier / aannemer</label>
+                            <input type="text" id="manualLeverancier" class="form-input" placeholder="Naam aannemer">
+                        </div>
+                        <div class="form-group">
+                            <label for="manualOmschrijving">Omschrijving werkzaamheden</label>
+                            <input type="text" id="manualOmschrijving" class="form-input" placeholder="Bijv. Isolatie buitengevel">
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="manualProjectType">Projecttype</label>
+                                <select id="manualProjectType" class="form-select">
+                                    <option value="nieuwbouw">Nieuwbouw</option>
+                                    <option value="verbouw">Verbouw / renovatie</option>
+                                    <option value="verduurzaming">Verduurzaming</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="manualCategorie">Categorie</label>
+                                <select id="manualCategorie" class="form-select">
+                                    <option value="bouwkundig">Bouwkundig</option>
+                                    <option value="installaties">Installaties (E/W/S)</option>
+                                    <option value="afbouw">Afbouw / interieur</option>
+                                    <option value="terrein">Terrein / buitenruimte</option>
+                                    <option value="duurzaamheid">Duurzaamheid / energie</option>
+                                    <option value="inrichting">Inrichting / inventaris</option>
+                                    <option value="advies">Advies / begeleiding</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="manualBedrag">Bedrag excl. BTW</label>
+                                <input type="number" id="manualBedrag" class="form-input" step="0.01" placeholder="0,00">
+                            </div>
+                            <div class="form-group">
+                                <label for="manualBTW">BTW bedrag</label>
+                                <input type="number" id="manualBTW" class="form-input" step="0.01" placeholder="0,00">
+                            </div>
+                            <div class="form-group">
+                                <label for="manualBTWPerc">BTW %</label>
+                                <select id="manualBTWPerc" class="form-select">
+                                    <option value="21">21%</option>
+                                    <option value="9">9%</option>
+                                    <option value="0">0%</option>
+                                </select>
+                            </div>
+                        </div>
+                        <button class="btn btn-primary" id="btnAddManual">Toevoegen</button>
+                    </div>
+                </div>
+
+                <div class="card" style="margin-top:1rem;">
+                    <h3>Voorbeeldbestanden</h3>
+                    <p>Download voorbeeldbestanden om de applicatie te testen:</p>
+                    <div class="example-buttons">
+                        <button class="btn btn-outline" id="btnDownloadExample">Download voorbeeld investeringsfacturen</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ===== Investeringen ===== -->
+            <section id="tab-investeringen" class="tab-content">
+                <div class="section-header">
+                    <h2>Investeringsoverzicht</h2>
+                    <div class="section-actions">
+                        <div class="filter-bar">
+                            <select id="filterProjectType" class="form-select">
+                                <option value="">Alle projecttypen</option>
+                                <option value="nieuwbouw">Nieuwbouw</option>
+                                <option value="verbouw">Verbouw / renovatie</option>
+                                <option value="verduurzaming">Verduurzaming</option>
+                            </select>
+                            <select id="filterCategorie" class="form-select">
+                                <option value="">Alle categorieen</option>
+                                <option value="bouwkundig">Bouwkundig</option>
+                                <option value="installaties">Installaties</option>
+                                <option value="afbouw">Afbouw</option>
+                                <option value="terrein">Terrein</option>
+                                <option value="duurzaamheid">Duurzaamheid</option>
+                                <option value="inrichting">Inrichting</option>
+                                <option value="advies">Advies</option>
+                            </select>
+                            <select id="filterClassificatie" class="form-select">
+                                <option value="">Alle classificaties</option>
+                                <option value="aftrekbaar">Volledig aftrekbaar</option>
+                                <option value="niet-aftrekbaar">Niet-aftrekbaar</option>
+                                <option value="pre-pro-rata">Pre-pro-rata (bestemming)</option>
+                                <option value="onbeoordeeld">Onbeoordeeld</option>
+                            </select>
+                            <input type="text" id="filterSearch" class="form-input" placeholder="Zoeken...">
+                        </div>
+                        <button class="btn btn-primary" id="btnRunAssessment">Opnieuw beoordelen</button>
+                    </div>
+                </div>
+                <div class="table-scroll">
+                    <table id="investeringenTable" class="data-table data-table-interactive">
+                        <thead>
+                            <tr>
+                                <th class="sortable" data-sort="factuurDatum">Datum</th>
+                                <th class="sortable" data-sort="leverancier">Leverancier</th>
+                                <th>Omschrijving</th>
+                                <th class="sortable" data-sort="projectType">Type</th>
+                                <th class="sortable" data-sort="categorie">Categorie</th>
+                                <th class="sortable num" data-sort="bedragExclBTW">Bedrag</th>
+                                <th class="sortable num" data-sort="btwBedrag">BTW</th>
+                                <th>Bestemming</th>
+                                <th class="sortable" data-sort="classification">Classificatie</th>
+                                <th>Acties</th>
+                            </tr>
+                        </thead>
+                        <tbody id="investeringenBody"></tbody>
+                    </table>
+                </div>
+                <div class="pagination" id="investeringenPagination"></div>
+            </section>
+
+            <!-- ===== Vragen ===== -->
+            <section id="tab-vragen" class="tab-content">
+                <div class="section-header">
+                    <h2>Verduidelijkingsvragen</h2>
+                    <div class="section-actions">
+                        <select id="filterVragenStatus" class="form-select">
+                            <option value="">Alle vragen</option>
+                            <option value="open">Open</option>
+                            <option value="beantwoord">Beantwoord</option>
+                        </select>
+                    </div>
+                </div>
+                <div id="questionsContainer" class="questions-list">
+                    <p class="text-muted">Importeer investeringsfacturen en voer een beoordeling uit om vragen te genereren.</p>
+                </div>
+            </section>
+
+            <!-- ===== Rapportage ===== -->
+            <section id="tab-rapportage" class="tab-content">
+                <h2>Rapportage</h2>
+                <div class="report-grid">
+                    <div class="card">
+                        <h3>Fiscaal investeringsrapport</h3>
+                        <p>Compleet overzicht met bestemmingsanalyse, BTW-aftrek per categorie en herzieningsoverzicht.</p>
+                        <button class="btn btn-primary" id="btnGenerateReport">Rapport genereren</button>
+                    </div>
+                    <div class="card">
+                        <h3>Export</h3>
+                        <p>Exporteer het beoordeelde investeringsoverzicht.</p>
+                        <button class="btn btn-outline" id="btnExportCSV">Exporteer detail (CSV)</button>
+                        <button class="btn btn-outline" id="btnExportSummary">Exporteer samenvatting (CSV)</button>
+                    </div>
+                </div>
+                <div id="reportOutput" class="report-output" style="display:none;">
+                    <div class="card">
+                        <div class="report-header">
+                            <h3>Fiscaal Rapport - BTW op investeringen</h3>
+                            <button class="btn btn-sm btn-outline" id="btnPrintReport">Afdrukken</button>
+                        </div>
+                        <div id="reportContent"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ===== Instellingen ===== -->
+            <section id="tab-instellingen" class="tab-content">
+                <h2>Instellingen</h2>
+                <div class="settings-grid">
+                    <div class="card">
+                        <h3>Projectinstellingen</h3>
+                        <div class="form-group">
+                            <label for="settingProjectNaam">Projectnaam</label>
+                            <input type="text" id="settingProjectNaam" class="form-input" placeholder="Bijv. Nieuwbouw Zorgcentrum De Linde">
+                        </div>
+                        <div class="form-group">
+                            <label for="settingOrganisatie">Zorginstelling</label>
+                            <input type="text" id="settingOrganisatie" class="form-input" placeholder="Naam zorginstelling">
+                        </div>
+                        <div class="form-group">
+                            <label for="settingProRata">Pro rata percentage (%)</label>
+                            <input type="number" id="settingProRata" class="form-input" min="0" max="100" step="0.1" value="5">
+                            <span class="help-text">Verhouding belaste / totale omzet van de zorginstelling. Typisch 3-8% voor zorginstellingen.</span>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="settingBouwjaar">Bouwjaar / jaar ingebruikname</label>
+                                <input type="number" id="settingBouwjaar" class="form-input" min="2000" max="2040" value="2024">
+                                <span class="help-text">Startjaar herzieningsperiode (art. 13 Uitv.besch. OB).</span>
+                            </div>
+                            <div class="form-group">
+                                <label for="settingPeriode">Beoordelingsperiode</label>
+                                <input type="text" id="settingPeriode" class="form-input" placeholder="Bijv. 2024-2025">
+                            </div>
+                        </div>
+                        <button class="btn btn-primary" id="btnSaveSettings">Instellingen opslaan</button>
+                    </div>
+
+                    <div class="card">
+                        <h3>Classificatieregels</h3>
+                        <p>Regels waarmee investeringsregels automatisch worden geclassificeerd op basis van categorie, projecttype en bestemming.</p>
+                        <button class="btn btn-primary" id="btnAddRule">+ Regel toevoegen</button>
+                        <button class="btn btn-outline" id="btnResetRules">Standaardregels herstellen</button>
+                        <div class="table-scroll" style="margin-top:1rem;">
+                            <table id="rulesTable" class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Prio</th>
+                                        <th>Naam</th>
+                                        <th>Voorwaarden</th>
+                                        <th>Classificatie</th>
+                                        <th>Actief</th>
+                                        <th>Acties</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="rulesBody"></tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <h3>Gegevens beheer</h3>
+                        <div class="data-management">
+                            <button class="btn btn-outline" id="btnExportProject">Project exporteren (JSON)</button>
+                            <button class="btn btn-outline" id="btnImportProject">Project importeren (JSON)</button>
+                            <input type="file" id="fileImportProject" accept=".json" hidden>
+                            <button class="btn btn-danger" id="btnClearData">Alle gegevens wissen</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Modal: Investering detail -->
+    <div class="modal-overlay" id="modalInvesteringDetail" style="display:none;">
+        <div class="modal modal-lg">
+            <div class="modal-header">
+                <h3>Investering - fiscale beoordeling</h3>
+                <button class="modal-close" data-close-modal="modalInvesteringDetail">&times;</button>
+            </div>
+            <div class="modal-body" id="modalInvesteringBody"></div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" id="btnSaveInvestering">Opslaan</button>
+                <button class="btn btn-outline" data-close-modal="modalInvesteringDetail">Sluiten</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Ruimte bewerken -->
+    <div class="modal-overlay" id="modalRuimte" style="display:none;">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 id="modalRuimteTitle">Ruimte toevoegen</h3>
+                <button class="modal-close" data-close-modal="modalRuimte">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="ruimteNaam">Naam ruimte / gebouwdeel</label>
+                    <input type="text" id="ruimteNaam" class="form-input" placeholder="Bijv. Verpleegafdeling 1e etage">
+                </div>
+                <div class="form-group">
+                    <label for="ruimteOppervlakte">Oppervlakte (m&sup2;)</label>
+                    <input type="number" id="ruimteOppervlakte" class="form-input" min="0" step="0.1" placeholder="0">
+                </div>
+                <div class="form-group">
+                    <label for="ruimteBestemming">Bestemming</label>
+                    <select id="ruimteBestemming" class="form-select">
+                        <option value="zorg">Zorgverlening (vrijgesteld)</option>
+                        <option value="kantoor">Kantoor / administratie (pro rata)</option>
+                        <option value="commercieel">Commercieel belast (catering, verhuur, parkeren)</option>
+                        <option value="algemeen">Algemeen / gedeeld (hal, gang, receptie)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="ruimteToelichting">Toelichting</label>
+                    <input type="text" id="ruimteToelichting" class="form-input" placeholder="Nadere omschrijving...">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" id="btnSaveRuimte">Opslaan</button>
+                <button class="btn btn-outline" data-close-modal="modalRuimte">Annuleren</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Regel bewerken -->
+    <div class="modal-overlay" id="modalRegel" style="display:none;">
+        <div class="modal modal-lg">
+            <div class="modal-header">
+                <h3 id="modalRegelTitle">Regel bewerken</h3>
+                <button class="modal-close" data-close-modal="modalRegel">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="ruleNaam">Regelnaam</label>
+                    <input type="text" id="ruleNaam" class="form-input" placeholder="Bijv. Zonnepanelen dak">
+                </div>
+                <div class="form-group">
+                    <label for="rulePrioriteit">Prioriteit (lager = eerder)</label>
+                    <input type="number" id="rulePrioriteit" class="form-input" value="50" min="1" max="999">
+                </div>
+                <div class="form-group">
+                    <label>Voorwaarden</label>
+                    <div id="ruleConditions" class="conditions-list"></div>
+                    <button class="btn btn-sm btn-outline" id="btnAddCondition">+ Voorwaarde</button>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="ruleClassificatie">Classificatie</label>
+                        <select id="ruleClassificatie" class="form-select">
+                            <option value="aftrekbaar">Volledig aftrekbaar</option>
+                            <option value="niet-aftrekbaar">Niet-aftrekbaar</option>
+                            <option value="pre-pro-rata">Pre-pro-rata (bestemming)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="ruleHerzieningType">Herzieningstype</label>
+                        <select id="ruleHerzieningType" class="form-select">
+                            <option value="onroerend">Onroerend goed (10 jaar)</option>
+                            <option value="roerend">Roerend goed (5 jaar)</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="ruleOmschrijving">Toelichting</label>
+                    <textarea id="ruleOmschrijving" class="form-input" rows="2" placeholder="Fiscale toelichting..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label><input type="checkbox" id="ruleActief" checked> Regel actief</label>
+                </div>
+                <div class="form-group">
+                    <label><input type="checkbox" id="ruleVraagStellen"> Verduidelijkingsvraag stellen</label>
+                </div>
+                <div class="form-group" id="ruleVraagGroup" style="display:none;">
+                    <label for="ruleVraagTekst">Vraagtekst</label>
+                    <textarea id="ruleVraagTekst" class="form-input" rows="2"></textarea>
+                    <label for="ruleVraagType" style="margin-top:0.5rem;">Vraagtype</label>
+                    <select id="ruleVraagType" class="form-select">
+                        <option value="keuze">Meerkeuze</option>
+                        <option value="percentage">Percentage</option>
+                        <option value="ja-nee">Ja/Nee</option>
+                        <option value="tekst">Vrij tekst</option>
+                    </select>
+                    <div id="ruleVraagOpties" style="margin-top:0.5rem;display:none;">
+                        <label>Keuze-opties (per regel)</label>
+                        <textarea id="ruleVraagOptiesTekst" class="form-input" rows="3"></textarea>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" id="btnSaveRule">Opslaan</button>
+                <button class="btn btn-outline" data-close-modal="modalRegel">Annuleren</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Nieuw project -->
+    <div class="modal-overlay" id="modalNieuwProject" style="display:none;">
+        <div class="modal">
+            <div class="modal-header">
+                <h3>Nieuw investeringsproject</h3>
+                <button class="modal-close" data-close-modal="modalNieuwProject">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="newProjectNaam">Projectnaam</label>
+                    <input type="text" id="newProjectNaam" class="form-input" placeholder="Bijv. Nieuwbouw Zorgcentrum De Linde">
+                </div>
+                <div class="form-group">
+                    <label for="newProjectOrganisatie">Zorginstelling</label>
+                    <input type="text" id="newProjectOrganisatie" class="form-input" placeholder="Naam organisatie">
+                </div>
+                <div class="form-group">
+                    <label for="newProjectProRata">Pro rata percentage (%)</label>
+                    <input type="number" id="newProjectProRata" class="form-input" value="5" min="0" max="100" step="0.1">
+                    <span class="help-text">Typisch 3-8% voor zorginstellingen.</span>
+                </div>
+                <div class="form-group">
+                    <label for="newProjectBouwjaar">Jaar ingebruikname</label>
+                    <input type="number" id="newProjectBouwjaar" class="form-input" value="2024" min="2000" max="2040">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" id="btnCreateProject">Project aanmaken</button>
+                <button class="btn btn-outline" data-close-modal="modalNieuwProject">Annuleren</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="toastContainer" class="toast-container"></div>
+
+    <script src="js/utils.js"></script>
+    <script src="js/data-store.js"></script>
+    <script src="js/import-handler.js"></script>
+    <script src="js/rule-engine.js"></script>
+    <script src="js/assessment.js"></script>
+    <script src="js/reports.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>

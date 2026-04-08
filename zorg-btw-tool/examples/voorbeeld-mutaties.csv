@@ -1,0 +1,21 @@
+Factuurdatum;Factuurnummer;Leverancier;Omschrijving;Projecttype;Categorie;Bedrag excl. BTW;BTW bedrag;BTW %
+15-01-2024;FN-2024-001;Bouwbedrijf Van Dam BV;Heiwerkzaamheden nieuwbouw;Nieuwbouw;Bouwkundig;285000,00;59850,00;21
+22-01-2024;FN-2024-002;Bouwbedrijf Van Dam BV;Betonwerk fundering;Nieuwbouw;Bouwkundig;195000,00;40950,00;21
+05-02-2024;FN-2024-003;Architectenbureau MVSA;Architectkosten ontwerp fase;Nieuwbouw;Advies;125000,00;26250,00;21
+12-02-2024;FN-2024-004;Installatiebedrijf Wolter en Dros;HVAC installatie zorgvleugel;Nieuwbouw;Installaties;320000,00;67200,00;21
+20-02-2024;FN-2024-005;Installatiebedrijf Wolter en Dros;Elektra-installatie compleet;Nieuwbouw;Installaties;175000,00;36750,00;21
+01-03-2024;FN-2024-006;Bouwbedrijf Van Dam BV;Metselwerk gevels;Nieuwbouw;Bouwkundig;165000,00;34650,00;21
+15-03-2024;FN-2024-007;Duurzaam Installeren BV;Zonnepanelen dak (450 panelen);Verduurzaming;Duurzaamheid;180000,00;37800,00;21
+20-03-2024;FN-2024-008;Duurzaam Installeren BV;Warmtepompen (WKO installatie);Verduurzaming;Duurzaamheid;250000,00;52500,00;21
+01-04-2024;FN-2024-009;Isolatie Expert BV;Gevelisolatie (Rc 6.5);Verduurzaming;Duurzaamheid;95000,00;19950,00;21
+10-04-2024;FN-2024-010;Isolatie Expert BV;Dakisolatie (Rc 6.5);Verduurzaming;Duurzaamheid;78000,00;16380,00;21
+15-04-2024;FN-2024-011;LED Verlichting BV;LED verlichting gehele gebouw;Verduurzaming;Duurzaamheid;62000,00;13020,00;21
+20-04-2024;FN-2024-012;Afbouw Plus BV;Systeemwanden verpleegafdelingen;Nieuwbouw;Afbouw;145000,00;30450,00;21
+01-05-2024;FN-2024-013;Afbouw Plus BV;Plafonds en vloeren kantoorgedeelte;Nieuwbouw;Afbouw;88000,00;18480,00;21
+10-05-2024;FN-2024-014;Keuken en Catering Techniek BV;Professionele keukeninstallatie;Nieuwbouw;Installaties;125000,00;26250,00;21
+15-05-2024;FN-2024-015;GreenParking BV;Laadpalen parkeerterrein (10 stuks);Verduurzaming;Duurzaamheid;45000,00;9450,00;21
+20-05-2024;FN-2024-016;Terrein en Groen BV;Bestrating en groenvoorziening;Nieuwbouw;Terrein;95000,00;19950,00;21
+01-06-2024;FN-2024-017;Medisch Meubilair BV;Zorgmeubilair verpleegafdelingen;Nieuwbouw;Inrichting;210000,00;44100,00;21
+05-06-2024;FN-2024-018;Kantoorinrichting BV;Kantoormeubilair administratie;Nieuwbouw;Inrichting;35000,00;7350,00;21
+10-06-2024;FN-2024-019;Bouwbedrijf Jansen;Verbouw bestaande receptie;Verbouw;Bouwkundig;68000,00;14280,00;21
+15-06-2024;FN-2024-020;Adviesbureau Fiscaal BV;Fiscaal advies BTW-positie nieuwbouw;Nieuwbouw;Advies;18000,00;3780,00;21
