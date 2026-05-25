@@ -17,14 +17,36 @@ npm install
 npm run dev
 ```
 
-Open http://localhost:3000 — je wordt doorgestuurd naar `/locatie/de-wilgenhof`.
+Open http://localhost:3000 — landingspagina met link naar `/locatie/de-wilgenhof`.
+
+## Static export
+
+`next.config.js` heeft `output: 'export'` aanstaan, dus `npm run build` produceert een volledig statische site in `out/`. Geen Node-runtime nodig op de host.
+
+```bash
+npm run build
+npx serve out
+```
+
+## Deployen op Cloudflare Pages
+
+GitHub-integratie (auto-deploy bij elke push):
+
+1. CF dashboard → Workers & Pages → Create → Pages → Connect to Git
+2. Selecteer `FinQDC/Claude` (eerst CF GitHub App autoriseren voor de org)
+3. Production branch: `main` (of de branch die je wilt)
+4. Framework preset: **None**
+5. Build command: `cd nieuw-thuis && npm ci && npm run build`
+6. Build output directory: `nieuw-thuis/out`
+7. Environment variables: `NODE_VERSION = 20` (matcht `.nvmrc`)
+8. Save & Deploy
 
 ## Structuur
 
 ```
 app/
   layout.tsx                # Root layout met TopBar + Footer
-  page.tsx                  # Homepage (redirect naar De Wilgenhof)
+  page.tsx                  # Landingspagina
   locatie/[slug]/page.tsx   # Detailpagina per locatie
 components/                 # UI-componenten per sectie
 lib/data/
