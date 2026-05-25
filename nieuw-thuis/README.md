@@ -4,7 +4,8 @@ Verkenningsfase prototype voor een platform dat mensen helpt op de weg van thuis
 
 ## Stack
 
-- Next.js 14 (App Router)
+- Next.js 16 (App Router, Turbopack)
+- React 19
 - TypeScript
 - Tailwind CSS 3
 - lucide-react
