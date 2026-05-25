@@ -31,7 +31,7 @@ export function TopBar() {
           <span className="font-serif font-semibold text-[22px] tracking-tight">Nieuw Thuis</span>
         </Link>
         <nav className="flex items-center gap-7">
-          <Link href="#" className="hidden md:inline text-sm font-medium text-ink">
+          <Link href="/zoeken" className="hidden md:inline text-sm font-medium text-ink">
             Zoeken
           </Link>
           <Link href="#" className="hidden md:inline text-sm font-medium text-ink">

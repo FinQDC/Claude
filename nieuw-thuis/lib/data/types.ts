@@ -67,13 +67,38 @@ export type LocatieMeta = {
   wachttijdLabel: string
 }
 
+export type ZorgType = 'pg' | 'somatiek' | 'verzorgingshuis' | 'aanleunwoning'
+
+export type ReligieuzeIdentiteit =
+  | 'geen'
+  | 'protestants'
+  | 'katholiek'
+  | 'joods'
+  | 'islamitisch'
+
+export type Energielabel = 'A' | 'B' | 'C' | 'D' | 'E' | 'F' | 'G'
+
 export type Locatie = {
   slug: string
   naam: string
   type: string
+  zorgType: ZorgType
   tagline: string
+  cardTagline: string
   breadcrumbs: Crumb[]
   meta: LocatieMeta
+  filters: {
+    regio: string
+    gemeente: string
+    postcode: string
+    kleinschalig: boolean
+    partneropname: boolean
+    huisdier: boolean
+    religieuzeIdentiteit: ReligieuzeIdentiteit
+    eigenTuin: boolean
+    wachttijdMaanden: number
+    energielabel: Energielabel
+  }
   gallery: GalleryItem[]
   doelgroep: Doelgroep[]
   sfeer: Sfeer
@@ -84,4 +109,31 @@ export type Locatie = {
   voorzieningen: Voorziening[]
   wachttijd: Wachttijd
   omgeving: Omgeving
+}
+
+export type LocatieKort = Pick<
+  Locatie,
+  'slug' | 'naam' | 'type' | 'zorgType' | 'cardTagline' | 'meta' | 'filters'
+> & { coverImage: string }
+
+export const zorgTypeLabels: Record<ZorgType, string> = {
+  pg: 'Verpleeghuis — PG (dementie)',
+  somatiek: 'Verpleeghuis — Somatiek',
+  verzorgingshuis: 'Verzorgingshuis / geclusterd wonen',
+  aanleunwoning: 'Aanleunwoning / zelfstandig met zorg',
+}
+
+export const zorgTypeKort: Record<ZorgType, string> = {
+  pg: 'PG',
+  somatiek: 'Somatiek',
+  verzorgingshuis: 'Verzorgingshuis',
+  aanleunwoning: 'Aanleunwoning',
+}
+
+export const religieuzeIdentiteitLabels: Record<ReligieuzeIdentiteit, string> = {
+  geen: 'Geen voorkeur',
+  protestants: 'Protestants-christelijk',
+  katholiek: 'Rooms-katholiek',
+  joods: 'Joods',
+  islamitisch: 'Islamitisch',
 }
