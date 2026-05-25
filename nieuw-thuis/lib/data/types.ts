@@ -78,6 +78,10 @@ export type ReligieuzeIdentiteit =
 
 export type Energielabel = 'A' | 'B' | 'C' | 'D' | 'E' | 'F' | 'G'
 
+export type ZorgProfiel = 'VV4' | 'VV5' | 'VV6' | 'VV7' | 'VV8' | 'VV9b' | 'VV10'
+
+export type IndicatieStatus = 'wlz' | 'wmo-zvw' | 'geen' | 'onbekend'
+
 export type Locatie = {
   slug: string
   naam: string
@@ -99,6 +103,8 @@ export type Locatie = {
     wachttijdMaanden: number
     energielabel: Energielabel
   }
+  zorgprofielen: ZorgProfiel[]
+  zorgprofielenContext: string
   gallery: GalleryItem[]
   doelgroep: Doelgroep[]
   sfeer: Sfeer
@@ -113,7 +119,7 @@ export type Locatie = {
 
 export type LocatieKort = Pick<
   Locatie,
-  'slug' | 'naam' | 'type' | 'zorgType' | 'cardTagline' | 'meta' | 'filters'
+  'slug' | 'naam' | 'type' | 'zorgType' | 'cardTagline' | 'meta' | 'filters' | 'zorgprofielen'
 > & { coverImage: string }
 
 export const zorgTypeLabels: Record<ZorgType, string> = {
@@ -136,4 +142,25 @@ export const religieuzeIdentiteitLabels: Record<ReligieuzeIdentiteit, string> = 
   katholiek: 'Rooms-katholiek',
   joods: 'Joods',
   islamitisch: 'Islamitisch',
+}
+
+export const zorgProfielen: { code: ZorgProfiel; kort: string; lang: string; categorie: string }[] = [
+  { code: 'VV4', kort: 'VV4 — Beschut wonen', lang: 'Beschut wonen met intensieve begeleiding', categorie: 'Lichte zorg' },
+  { code: 'VV5', kort: 'VV5 — PG, lichter', lang: 'Beschermd wonen met intensieve dementiezorg', categorie: 'Psychogeriatrie' },
+  { code: 'VV6', kort: 'VV6 — Intensieve zorg', lang: 'Beschermd wonen met intensieve verzorging en verpleging', categorie: 'PG of somatiek' },
+  { code: 'VV7', kort: 'VV7 — PG, zwaar', lang: 'Beschermd wonen met zeer intensieve zorg, vanwege ernstige PG-problematiek', categorie: 'Psychogeriatrie' },
+  { code: 'VV8', kort: 'VV8 — Somatiek, zwaar', lang: 'Beschermd wonen met zeer intensieve zorg, vanwege specifieke aandoeningen', categorie: 'Somatiek' },
+  { code: 'VV9b', kort: 'VV9b — Revalidatie', lang: 'Herstelgerichte behandeling met verpleging en verzorging', categorie: 'Tijdelijk' },
+  { code: 'VV10', kort: 'VV10 — Palliatief', lang: 'Beschermd verblijf met intensieve palliatief-terminale zorg', categorie: 'Palliatief' },
+]
+
+export const zorgProfielMap: Record<ZorgProfiel, (typeof zorgProfielen)[number]> = Object.fromEntries(
+  zorgProfielen.map((p) => [p.code, p]),
+) as Record<ZorgProfiel, (typeof zorgProfielen)[number]>
+
+export const indicatieLabels: Record<IndicatieStatus, string> = {
+  wlz: 'Wlz-indicatie afgegeven',
+  'wmo-zvw': 'Wmo of Zvw (wijkverpleging)',
+  geen: 'Nog geen indicatie',
+  onbekend: 'Weet ik niet zeker',
 }

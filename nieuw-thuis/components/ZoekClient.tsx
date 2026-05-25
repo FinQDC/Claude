@@ -8,14 +8,18 @@ import {
   type LocatieKort,
   type ZorgType,
   type ReligieuzeIdentiteit,
+  type ZorgProfiel,
   zorgTypeLabels,
   religieuzeIdentiteitLabels,
+  zorgProfielen,
+  zorgProfielMap,
 } from '@/lib/data/types'
 
 type Sort = 'afstand' | 'wachttijd' | 'naam'
 
 type FilterState = {
   type: ZorgType | null
+  profiel: ZorgProfiel | null
   postcode: string
   kleinschalig: boolean
   partneropname: boolean
@@ -26,18 +30,6 @@ type FilterState = {
   sort: Sort
 }
 
-const DEFAULT_FILTERS: FilterState = {
-  type: null,
-  postcode: '',
-  kleinschalig: false,
-  partneropname: false,
-  huisdier: false,
-  eigenTuin: false,
-  religieuzeIdentiteit: null,
-  maxWachttijd: null,
-  sort: 'afstand',
-}
-
 export function ZoekClient({ alleLocaties }: { alleLocaties: LocatieKort[] }) {
   const router = useRouter()
   const searchParams = useSearchParams()
@@ -45,6 +37,7 @@ export function ZoekClient({ alleLocaties }: { alleLocaties: LocatieKort[] }) {
   const filters: FilterState = useMemo(
     () => ({
       type: (searchParams.get('type') as ZorgType | null) || null,
+      profiel: (searchParams.get('profiel') as ZorgProfiel | null) || null,
       postcode: searchParams.get('postcode') || '',
       kleinschalig: searchParams.get('kleinschalig') === '1',
       partneropname: searchParams.get('partneropname') === '1',
@@ -81,6 +74,7 @@ export function ZoekClient({ alleLocaties }: { alleLocaties: LocatieKort[] }) {
   const resultaten = useMemo(() => {
     let r = alleLocaties.slice()
     if (filters.type) r = r.filter((l) => l.zorgType === filters.type)
+    if (filters.profiel) r = r.filter((l) => l.zorgprofielen.includes(filters.profiel!))
     if (filters.kleinschalig) r = r.filter((l) => l.filters.kleinschalig)
     if (filters.partneropname) r = r.filter((l) => l.filters.partneropname)
     if (filters.huisdier) r = r.filter((l) => l.filters.huisdier)
@@ -102,6 +96,28 @@ export function ZoekClient({ alleLocaties }: { alleLocaties: LocatieKort[] }) {
 
   return (
     <div className="wrap py-8">
+      {filters.profiel && (
+        <div className="bg-terracotta-bg border border-terracotta-soft rounded-lg p-4 px-5 mb-6 flex items-start gap-4">
+          <div className="w-9 h-9 rounded-full bg-terracotta text-cream flex items-center justify-center font-bold text-[13px] shrink-0">
+            {filters.profiel}
+          </div>
+          <div className="flex-1">
+            <div className="font-serif font-medium text-[16px] text-night mb-0.5">
+              Alleen locaties die {filters.profiel} kunnen leveren
+            </div>
+            <div className="text-[13px] text-ink-soft leading-[1.5]">
+              {zorgProfielMap[filters.profiel].lang}.
+            </div>
+          </div>
+          <button
+            onClick={() => updateFilter('profiel', null)}
+            className="text-[12px] text-ink-soft hover:text-terracotta underline underline-offset-2 shrink-0"
+          >
+            Verwijder
+          </button>
+        </div>
+      )}
+
       <div className="mb-6 flex flex-wrap items-end justify-between gap-4">
         <div>
           <div className="text-[11px] font-semibold uppercase tracking-[0.15em] text-terracotta mb-2">
@@ -166,6 +182,30 @@ export function ZoekClient({ alleLocaties }: { alleLocaties: LocatieKort[] }) {
                   />
                 ))}
               </div>
+            </FilterGroup>
+
+            <FilterGroup titel="Wlz-zorgprofiel">
+              <select
+                value={filters.profiel ?? ''}
+                onChange={(e) =>
+                  updateFilter('profiel', (e.target.value || null) as ZorgProfiel | null)
+                }
+                className="w-full bg-white border border-line rounded-md px-3 py-2 text-[13px] focus:outline-none focus:border-terracotta"
+              >
+                <option value="">Geen filter</option>
+                {zorgProfielen.map((p) => (
+                  <option key={p.code} value={p.code}>
+                    {p.kort}
+                  </option>
+                ))}
+              </select>
+              <p className="text-[11px] text-ink-muted mt-2 leading-[1.4]">
+                Staat op uw CIZ-besluit. Onbekend?{' '}
+                <a href="/indicatie" className="underline hover:text-terracotta">
+                  Lees uitleg
+                </a>
+                .
+              </p>
             </FilterGroup>
 
             <FilterGroup titel="Postcode">
@@ -349,6 +389,7 @@ function paramName(key: keyof FilterState): string {
 function countActive(f: FilterState): number {
   let n = 0
   if (f.type) n++
+  if (f.profiel) n++
   if (f.postcode) n++
   if (f.kleinschalig) n++
   if (f.partneropname) n++

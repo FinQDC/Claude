@@ -1,4 +1,5 @@
 import { HomeHero } from '@/components/HomeHero'
+import { IndicatieKiezer } from '@/components/IndicatieKiezer'
 import { HomeFeatures } from '@/components/HomeFeatures'
 import { locaties, zorgTypeCounts } from '@/lib/data/locaties'
 
@@ -45,6 +46,7 @@ export default function Home() {
   return (
     <main>
       <HomeHero tiles={tiles} totaalLocaties={locaties.length} />
+      <IndicatieKiezer />
       <HomeFeatures />
     </main>
   )

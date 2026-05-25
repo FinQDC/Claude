@@ -7,6 +7,7 @@ import { DoelgroepPills } from '@/components/DoelgroepPills'
 import { SfeerVerhaal } from '@/components/SfeerVerhaal'
 import { Team } from '@/components/Team'
 import { Cijfers } from '@/components/Cijfers'
+import { Zorgprofielen } from '@/components/Zorgprofielen'
 import { OrgResponse } from '@/components/OrgResponse'
 import { Voorzieningen } from '@/components/Voorzieningen'
 import { Wachttijd } from '@/components/Wachttijd'
@@ -40,6 +41,10 @@ export default async function LocatiePage({
           <SfeerVerhaal sfeer={locatie.sfeer} />
           <Team leden={locatie.team} />
           <Cijfers cijfers={locatie.cijfers} bron={locatie.cijfersBron} />
+          <Zorgprofielen
+            profielen={locatie.zorgprofielen}
+            context={locatie.zorgprofielenContext}
+          />
           <OrgResponse response={locatie.organisatie} />
           <Voorzieningen items={locatie.voorzieningen} />
           <Wachttijd wachttijd={locatie.wachttijd} />

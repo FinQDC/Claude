@@ -32,6 +32,9 @@ export const deWilgenhof: Locatie = {
     wachttijdMaanden: 5,
     energielabel: 'B',
   },
+  zorgprofielen: ['VV5', 'VV6'],
+  zorgprofielenContext:
+    'Gespecialiseerd in lichtere tot middelzware PG. Voor zeer intensieve zorg (VV7) verwijzen we door naar partnerlocaties — kleinschalig wonen werkt minder goed bij die zorgzwaarte.',
   gallery: [
     { src: 'https://images.unsplash.com/photo-1568605114967-8130f3a36994?w=1200&q=80', label: 'Voorgevel — herfst' },
     { src: 'https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=600&q=80', label: 'Woonkamer' },
@@ -139,6 +142,9 @@ const huizeAnna: Locatie = {
     wachttijdMaanden: 10,
     energielabel: 'C',
   },
+  zorgprofielen: ['VV5', 'VV6', 'VV7'],
+  zorgprofielenContext:
+    'Volledig spectrum PG, inclusief zeer intensieve zorg (VV7). Aparte gesloten afdeling voor wie veiligheid nodig heeft.',
   gallery: [
     { src: 'https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=1200&q=80', label: 'Voorgevel' },
     { src: 'https://images.unsplash.com/photo-1503602642458-232111445657?w=600&q=80', label: 'Kapel' },
@@ -241,6 +247,9 @@ const deTjongerwald: Locatie = {
     wachttijdMaanden: 4,
     energielabel: 'A',
   },
+  zorgprofielen: ['VV4', 'VV6', 'VV8', 'VV9b'],
+  zorgprofielenContext:
+    'Somatische zorg over de volle breedte plus aparte revalidatie-afdeling (VV9b). Geen PG-zorg op deze locatie — daar verwijzen we door.',
   gallery: [
     { src: 'https://images.unsplash.com/photo-1582719471384-894fbb16e074?w=1200&q=80', label: 'Hoofdingang' },
     { src: 'https://images.unsplash.com/photo-1631815588090-d4bfec5b1ccb?w=600&q=80', label: 'Fysiotherapie-ruimte' },
@@ -344,6 +353,9 @@ const hetSterrenbos: Locatie = {
     wachttijdMaanden: 6,
     energielabel: 'B',
   },
+  zorgprofielen: ['VV4', 'VV6'],
+  zorgprofielenContext:
+    'Kleinschalig somatisch — geschikt voor middelzware zorg. VV8 (zeer intensief) kan vanwege de schaal niet altijd, daar bespreken we per situatie.',
   gallery: [
     { src: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=1200&q=80', label: 'Voorgevel' },
     { src: 'https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=600&q=80', label: 'Woonkamer woongroep 1' },
@@ -444,6 +456,9 @@ const residentieMarekade: Locatie = {
     wachttijdMaanden: 3,
     energielabel: 'A',
   },
+  zorgprofielen: ['VV4'],
+  zorgprofielenContext:
+    'Voor zelfstandige bewoning met lichte zorg op afroep. Geen 24-uurs verpleegzorg (VV6/VV7/VV8). Voor zwaardere zorg kan binnen het netwerk worden doorverwezen.',
   gallery: [
     { src: 'https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=1200&q=80', label: 'Voorgevel aan het water' },
     { src: 'https://images.unsplash.com/photo-1493663284031-b7e3aefcae8e?w=600&q=80', label: 'Voorbeeld appartement' },
@@ -546,6 +561,9 @@ const zonnehofAanleun: Locatie = {
     wachttijdMaanden: 2,
     energielabel: 'B',
   },
+  zorgprofielen: [],
+  zorgprofielenContext:
+    'Aanleunwoningen vragen geen Wlz-indicatie. Zorg wordt geleverd via Wmo (gemeente) en Zvw (wijkverpleging). Bij toenemende zorgbehoefte is doorstroom naar het naastgelegen verpleeghuis mogelijk.',
   gallery: [
     { src: 'https://images.unsplash.com/photo-1564540583246-934409427776?w=1200&q=80', label: 'Aanleunwoningen' },
     { src: 'https://images.unsplash.com/photo-1565183997392-2f6f122e5912?w=600&q=80', label: 'Voorbeeld interieur' },
@@ -645,6 +663,7 @@ export function toLocatieKort(l: Locatie): LocatieKort {
     cardTagline: l.cardTagline,
     meta: l.meta,
     filters: l.filters,
+    zorgprofielen: l.zorgprofielen,
     coverImage: l.gallery[0]?.src ?? '',
   }
 }
