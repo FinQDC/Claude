@@ -115,6 +115,30 @@ export const deWilgenhof: Locatie = {
       { label: 'Reistijd vanaf u', value: '12 minuten met de auto' },
     ],
   },
+  publiekeBronnen: {
+    bag: {
+      pandId: '0090100000123456',
+      bouwjaar: 1978,
+      oppervlakteM2: 1840,
+      gebruiksdoelen: ['woonfunctie', 'gezondheidszorgfunctie'],
+      status: 'Pand in gebruik',
+      bagViewerUrl: 'https://bagviewer.kadaster.nl/lvbag/bag-viewer/?objectId=0090100000123456',
+    },
+    digimv: {
+      jaar: 2024,
+      personeelsverloopPct: 8,
+      ziekteverzuimPct: 5.2,
+      bezettingsgraadPct: 97,
+      sectorGemiddelde: { personeelsverloopPct: 14, ziekteverzuimPct: 7.0 },
+      bron: 'jaarverantwoordingzorg.nl',
+    },
+    igj: {
+      datum: '2023-11',
+      status: 'voldoet',
+      url: 'https://www.igj.nl/onderwerpen/verpleeghuiszorg',
+      samenvatting: 'Inspectie oordeelt dat de zorg voldoet aan de normen. Aandachtspunt: medicatieveiligheid.',
+    },
+  },
 }
 
 const huizeAnna: Locatie = {
@@ -220,6 +244,30 @@ const huizeAnna: Locatie = {
       { label: 'Buurtkenmerk', value: 'Stedelijk maar rustig' },
       { label: 'Reistijd vanaf u', value: '22 minuten met de auto' },
     ],
+  },
+  publiekeBronnen: {
+    bag: {
+      pandId: '0074100000234567',
+      bouwjaar: 1995,
+      oppervlakteM2: 2980,
+      gebruiksdoelen: ['woonfunctie', 'gezondheidszorgfunctie'],
+      status: 'Pand in gebruik',
+      bagViewerUrl: 'https://bagviewer.kadaster.nl/lvbag/bag-viewer/?objectId=0074100000234567',
+    },
+    digimv: {
+      jaar: 2024,
+      personeelsverloopPct: 11,
+      ziekteverzuimPct: 6.5,
+      bezettingsgraadPct: 95,
+      sectorGemiddelde: { personeelsverloopPct: 14, ziekteverzuimPct: 7.0 },
+      bron: 'jaarverantwoordingzorg.nl',
+    },
+    igj: {
+      datum: '2023-05',
+      status: 'voldoet',
+      url: 'https://www.igj.nl/onderwerpen/verpleeghuiszorg',
+      samenvatting: 'Voldoet aan normen. Kwaliteit van zorg en bewonersbetrokkenheid worden positief beoordeeld.',
+    },
   },
 }
 
@@ -328,6 +376,30 @@ const deTjongerwald: Locatie = {
       { label: 'Reistijd vanaf u', value: '32 minuten met de auto' },
     ],
   },
+  publiekeBronnen: {
+    bag: {
+      pandId: '0098100000345678',
+      bouwjaar: 2008,
+      oppervlakteM2: 4520,
+      gebruiksdoelen: ['woonfunctie', 'gezondheidszorgfunctie'],
+      status: 'Pand in gebruik',
+      bagViewerUrl: 'https://bagviewer.kadaster.nl/lvbag/bag-viewer/?objectId=0098100000345678',
+    },
+    digimv: {
+      jaar: 2024,
+      personeelsverloopPct: 13,
+      ziekteverzuimPct: 7.8,
+      bezettingsgraadPct: 92,
+      sectorGemiddelde: { personeelsverloopPct: 14, ziekteverzuimPct: 7.0 },
+      bron: 'jaarverantwoordingzorg.nl',
+    },
+    igj: {
+      datum: '2024-07',
+      status: 'voldoet',
+      url: 'https://www.igj.nl/onderwerpen/verpleeghuiszorg',
+      samenvatting: 'Voldoet aan normen. Inspectie noemt revalidatieprogramma als sterke aspect.',
+    },
+  },
 }
 
 const hetSterrenbos: Locatie = {
@@ -431,6 +503,30 @@ const hetSterrenbos: Locatie = {
       { label: 'Buurtkenmerk', value: 'Groen, jaren-80 wijk, gevarieerde bewoning' },
       { label: 'Reistijd vanaf u', value: '28 minuten met de auto' },
     ],
+  },
+  publiekeBronnen: {
+    bag: {
+      pandId: '0080100000456789',
+      bouwjaar: 1985,
+      oppervlakteM2: 2410,
+      gebruiksdoelen: ['woonfunctie', 'gezondheidszorgfunctie'],
+      status: 'Pand in gebruik',
+      bagViewerUrl: 'https://bagviewer.kadaster.nl/lvbag/bag-viewer/?objectId=0080100000456789',
+    },
+    digimv: {
+      jaar: 2024,
+      personeelsverloopPct: 6,
+      ziekteverzuimPct: 4.8,
+      bezettingsgraadPct: 98,
+      sectorGemiddelde: { personeelsverloopPct: 14, ziekteverzuimPct: 7.0 },
+      bron: 'jaarverantwoordingzorg.nl',
+    },
+    igj: {
+      datum: '2024-03',
+      status: 'voldoet',
+      url: 'https://www.igj.nl/onderwerpen/verpleeghuiszorg',
+      samenvatting: 'Inspectie zeer positief over kwaliteit van zorg en stabiliteit van team.',
+    },
   },
 }
 
@@ -538,6 +634,30 @@ const residentieMarekade: Locatie = {
       { label: 'Reistijd vanaf u', value: '29 minuten met de auto' },
     ],
   },
+  publiekeBronnen: {
+    bag: {
+      pandId: '0080100000567890',
+      bouwjaar: 2015,
+      oppervlakteM2: 6240,
+      gebruiksdoelen: ['woonfunctie', 'gezondheidszorgfunctie'],
+      status: 'Pand in gebruik',
+      bagViewerUrl: 'https://bagviewer.kadaster.nl/lvbag/bag-viewer/?objectId=0080100000567890',
+    },
+    digimv: {
+      jaar: 2024,
+      personeelsverloopPct: 15,
+      ziekteverzuimPct: 8.2,
+      bezettingsgraadPct: 89,
+      sectorGemiddelde: { personeelsverloopPct: 14, ziekteverzuimPct: 7.0 },
+      bron: 'jaarverantwoordingzorg.nl',
+    },
+    igj: {
+      datum: '2023-10',
+      status: 'in verbetertraject',
+      url: 'https://www.igj.nl/onderwerpen/verpleeghuiszorg',
+      samenvatting: 'Aandacht voor personeelsbezetting in nachtdiensten — organisatie werkt aan herstelplan, herinspectie 2025.',
+    },
+  },
 }
 
 const zonnehofAanleun: Locatie = {
@@ -644,6 +764,30 @@ const zonnehofAanleun: Locatie = {
       { label: 'Buurtkenmerk', value: 'Gemengde woonwijk, levendig' },
       { label: 'Reistijd vanaf u', value: '19 minuten met de auto' },
     ],
+  },
+  publiekeBronnen: {
+    bag: {
+      pandId: '0074100000678901',
+      bouwjaar: 2002,
+      oppervlakteM2: 3580,
+      gebruiksdoelen: ['woonfunctie'],
+      status: 'Pand in gebruik',
+      bagViewerUrl: 'https://bagviewer.kadaster.nl/lvbag/bag-viewer/?objectId=0074100000678901',
+    },
+    digimv: {
+      jaar: 2024,
+      personeelsverloopPct: 9,
+      ziekteverzuimPct: 5.5,
+      bezettingsgraadPct: 96,
+      sectorGemiddelde: { personeelsverloopPct: 14, ziekteverzuimPct: 7.0 },
+      bron: 'jaarverantwoordingzorg.nl',
+    },
+    igj: {
+      datum: '2024-06',
+      status: 'voldoet',
+      url: 'https://www.igj.nl/onderwerpen/verpleeghuiszorg',
+      samenvatting: 'Voldoet aan normen voor wijkverpleging. Doorstroom naar verpleeghuis goed georganiseerd.',
+    },
   },
 }
 

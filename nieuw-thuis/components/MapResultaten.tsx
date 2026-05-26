@@ -41,10 +41,15 @@ export function MapResultaten({
         zoomControl: true,
         scrollWheelZoom: true,
       })
-      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
-        maxZoom: 18,
-      }).addTo(map)
+      L.tileLayer(
+        'https://service.pdok.nl/brt/achtergrondkaart/wmts/v2_0/grijs/EPSG:3857/{z}/{x}/{y}.png',
+        {
+          attribution:
+            '&copy; <a href="https://www.kadaster.nl/" target="_blank" rel="noopener">Kadaster</a> / <a href="https://www.pdok.nl/" target="_blank" rel="noopener">PDOK</a>',
+          maxZoom: 19,
+          minZoom: 6,
+        },
+      ).addTo(map)
       mapRef.current = map
     })
     return () => {

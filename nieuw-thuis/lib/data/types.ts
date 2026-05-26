@@ -84,6 +84,40 @@ export type IndicatieStatus = 'wlz' | 'wmo-zvw' | 'geen' | 'onbekend'
 
 export type Coord = { lat: number; lng: number }
 
+export type BagPand = {
+  pandId: string
+  bouwjaar: number
+  oppervlakteM2: number
+  gebruiksdoelen: string[]
+  status: string
+  bagViewerUrl?: string
+}
+
+export type DigiMV = {
+  jaar: number
+  personeelsverloopPct: number
+  ziekteverzuimPct: number
+  bezettingsgraadPct: number
+  sectorGemiddelde: {
+    personeelsverloopPct: number
+    ziekteverzuimPct: number
+  }
+  bron?: string
+}
+
+export type IgjRapport = {
+  datum: string
+  status: 'voldoet' | 'voldoet niet' | 'in verbetertraject'
+  url?: string
+  samenvatting?: string
+}
+
+export type PubliekeBronnen = {
+  bag?: BagPand
+  digimv?: DigiMV
+  igj?: IgjRapport
+}
+
 export type Locatie = {
   slug: string
   naam: string
@@ -118,6 +152,7 @@ export type Locatie = {
   voorzieningen: Voorziening[]
   wachttijd: Wachttijd
   omgeving: Omgeving
+  publiekeBronnen?: PubliekeBronnen
 }
 
 export type LocatieKort = Pick<
