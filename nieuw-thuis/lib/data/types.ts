@@ -82,6 +82,8 @@ export type ZorgProfiel = 'VV4' | 'VV5' | 'VV6' | 'VV7' | 'VV8' | 'VV9b' | 'VV10
 
 export type IndicatieStatus = 'wlz' | 'wmo-zvw' | 'geen' | 'onbekend'
 
+export type Coord = { lat: number; lng: number }
+
 export type Locatie = {
   slug: string
   naam: string
@@ -91,6 +93,7 @@ export type Locatie = {
   cardTagline: string
   breadcrumbs: Crumb[]
   meta: LocatieMeta
+  coord: Coord
   filters: {
     regio: string
     gemeente: string
@@ -119,7 +122,7 @@ export type Locatie = {
 
 export type LocatieKort = Pick<
   Locatie,
-  'slug' | 'naam' | 'type' | 'zorgType' | 'cardTagline' | 'meta' | 'filters' | 'zorgprofielen'
+  'slug' | 'naam' | 'type' | 'zorgType' | 'cardTagline' | 'meta' | 'coord' | 'filters' | 'zorgprofielen'
 > & { coverImage: string }
 
 export const zorgTypeLabels: Record<ZorgType, string> = {

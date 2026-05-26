@@ -20,6 +20,7 @@ export const deWilgenhof: Locatie = {
     renovatie: 2019,
     wachttijdLabel: '4-6 mnd',
   },
+  coord: { lat: 53.1034, lng: 6.0942 },
   filters: {
     regio: 'Drachten e.o.',
     gemeente: 'Smallingerland',
@@ -130,6 +131,7 @@ const huizeAnna: Locatie = {
     { label: 'Heerenveen', href: '/zoeken?regio=heerenveen' },
   ],
   meta: { afstandKm: 18, bewoners: 40, bouwjaar: 1995, renovatie: 2014, wachttijdLabel: '8-12 mnd' },
+  coord: { lat: 52.9576, lng: 5.9184 },
   filters: {
     regio: 'Heerenveen',
     gemeente: 'Heerenveen',
@@ -235,6 +237,7 @@ const deTjongerwald: Locatie = {
     { label: 'Wolvega', href: '/zoeken?regio=wolvega' },
   ],
   meta: { afstandKm: 28, bewoners: 60, bouwjaar: 2008, wachttijdLabel: '3-5 mnd' },
+  coord: { lat: 52.8765, lng: 6.0007 },
   filters: {
     regio: 'Wolvega',
     gemeente: 'Weststellingwerf',
@@ -341,6 +344,7 @@ const hetSterrenbos: Locatie = {
     { label: 'Leeuwarden', href: '/zoeken?regio=leeuwarden' },
   ],
   meta: { afstandKm: 22, bewoners: 32, bouwjaar: 1985, renovatie: 2021, wachttijdLabel: '5-8 mnd' },
+  coord: { lat: 53.1951, lng: 5.8120 },
   filters: {
     regio: 'Leeuwarden',
     gemeente: 'Leeuwarden',
@@ -444,6 +448,7 @@ const residentieMarekade: Locatie = {
     { label: 'Leeuwarden', href: '/zoeken?regio=leeuwarden' },
   ],
   meta: { afstandKm: 24, bewoners: 80, bouwjaar: 2015, wachttijdLabel: '2-4 mnd' },
+  coord: { lat: 53.2049, lng: 5.8021 },
   filters: {
     regio: 'Leeuwarden',
     gemeente: 'Leeuwarden',
@@ -549,6 +554,7 @@ const zonnehofAanleun: Locatie = {
     { label: 'Heerenveen', href: '/zoeken?regio=heerenveen' },
   ],
   meta: { afstandKm: 16, bewoners: 45, bouwjaar: 2002, renovatie: 2018, wachttijdLabel: '1-3 mnd' },
+  coord: { lat: 52.9640, lng: 5.9283 },
   filters: {
     regio: 'Heerenveen',
     gemeente: 'Heerenveen',
@@ -662,6 +668,7 @@ export function toLocatieKort(l: Locatie): LocatieKort {
     zorgType: l.zorgType,
     cardTagline: l.cardTagline,
     meta: l.meta,
+    coord: l.coord,
     filters: l.filters,
     zorgprofielen: l.zorgprofielen,
     coverImage: l.gallery[0]?.src ?? '',
