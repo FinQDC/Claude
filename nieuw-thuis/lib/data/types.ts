@@ -118,6 +118,35 @@ export type PubliekeBronnen = {
   igj?: IgjRapport
 }
 
+export type Welkomsboodschap = {
+  tekst: string
+  spreker: string
+  sprekerRol: string
+  duurSchatting: string
+  isAiStem: boolean
+  audioUrl?: string
+}
+
+export type VideoTour = {
+  embedUrl?: string
+  posterUrl: string
+  duur: string
+  titel: string
+  type: 'drone' | 'rondleiding' | 'sfeervideo'
+}
+
+export type Tour360 = {
+  embedUrl?: string
+  posterUrl: string
+  ruimtes: string[]
+}
+
+export type Media = {
+  welkomsboodschap?: Welkomsboodschap
+  videoTour?: VideoTour
+  tour360?: Tour360
+}
+
 export type Locatie = {
   slug: string
   naam: string
@@ -153,6 +182,7 @@ export type Locatie = {
   wachttijd: Wachttijd
   omgeving: Omgeving
   publiekeBronnen?: PubliekeBronnen
+  media?: Media
 }
 
 export type LocatieKort = Pick<

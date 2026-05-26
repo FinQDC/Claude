@@ -139,6 +139,26 @@ export const deWilgenhof: Locatie = {
       samenvatting: 'Inspectie oordeelt dat de zorg voldoet aan de normen. Aandachtspunt: medicatieveiligheid.',
     },
   },
+  media: {
+    welkomsboodschap: {
+      tekst:
+        'Welkom bij De Wilgenhof. Ik ben Janneke, locatieleider hier. Wij zijn een kleinschalig verpleeghuis met vierentwintig bewoners, allemaal met dementie. Bij ons werken zorgmedewerkers vaak al jaren — sommigen al meer dan tien jaar. Die continuïteit is wat wij belangrijk vinden, en wat onze bewoners en familie als kwaliteit ervaren. Mocht u rondkomen, neemt u alstublieft de tijd. Een rondleiding bij ons duurt rustig een uur, en we gaan in op uw specifieke vragen. Tot ziens.',
+      spreker: 'Janneke de Vries',
+      sprekerRol: 'Locatieleider',
+      duurSchatting: '1:18',
+      isAiStem: false,
+    },
+    videoTour: {
+      posterUrl: 'https://images.unsplash.com/photo-1568605114967-8130f3a36994?w=1600&q=80',
+      duur: '3:42',
+      titel: 'Drone-rondleiding exterieur en tuin',
+      type: 'drone',
+    },
+    tour360: {
+      posterUrl: 'https://images.unsplash.com/photo-1631679706909-1844bbd07221?w=1200&q=80',
+      ruimtes: ['Entree', 'Gemeenschappelijke woonkamer', 'Voorbeeld kamer', 'Tuin'],
+    },
+  },
 }
 
 const huizeAnna: Locatie = {
@@ -267,6 +287,16 @@ const huizeAnna: Locatie = {
       status: 'voldoet',
       url: 'https://www.igj.nl/onderwerpen/verpleeghuiszorg',
       samenvatting: 'Voldoet aan normen. Kwaliteit van zorg en bewonersbetrokkenheid worden positief beoordeeld.',
+    },
+  },
+  media: {
+    welkomsboodschap: {
+      tekst:
+        'Goedendag, ik ben pater Jan Hendriks, geestelijk verzorger bij Huize Anna in Heerenveen. We zijn een rooms-katholieke gemeenschap, maar iedereen die zich thuis voelt bij onze waarden is welkom — christelijk, gelovig of niet. Wat ons onderscheidt is de stilte, de gemeenschap rond de eucharistieviering, en dat we begeleiding bieden tot het einde. We hopen u snel te ontmoeten.',
+      spreker: 'Pater Jan Hendriks',
+      sprekerRol: 'Geestelijk verzorger',
+      duurSchatting: '0:54',
+      isAiStem: true,
     },
   },
 }
@@ -400,6 +430,22 @@ const deTjongerwald: Locatie = {
       samenvatting: 'Voldoet aan normen. Inspectie noemt revalidatieprogramma als sterke aspect.',
     },
   },
+  media: {
+    welkomsboodschap: {
+      tekst:
+        'Welkom bij Zorgcentrum De Tjongerwâld. Wij bieden somatische zorg en revalidatie aan zestig bewoners in Wolvega. Bij ons ligt het accent op herstel en zelfregie — onze fysiotherapeuten, ergotherapeuten en logopedisten werken intensief samen. Een rondleiding bij ons begint altijd bij de oefenzaal, want dat is voor veel mensen het belangrijkste.',
+      spreker: 'Marleen Bakker',
+      sprekerRol: 'Manager zorg',
+      duurSchatting: '1:02',
+      isAiStem: true,
+    },
+    videoTour: {
+      posterUrl: 'https://images.unsplash.com/photo-1582719471384-894fbb16e074?w=1600&q=80',
+      duur: '4:18',
+      titel: 'Rondleiding revalidatie en woongroepen',
+      type: 'rondleiding',
+    },
+  },
 }
 
 const hetSterrenbos: Locatie = {
@@ -526,6 +572,26 @@ const hetSterrenbos: Locatie = {
       status: 'voldoet',
       url: 'https://www.igj.nl/onderwerpen/verpleeghuiszorg',
       samenvatting: 'Inspectie zeer positief over kwaliteit van zorg en stabiliteit van team.',
+    },
+  },
+  media: {
+    welkomsboodschap: {
+      tekst:
+        'Hartelijk welkom bij Het Sterrenbos. Wij zijn een kleinschalig somatisch verpleeghuis in een rustige woonwijk in Leeuwarden, met drie woongroepen van elk twaalf bewoners. Ons team kent elke bewoner persoonlijk, en juist die kleinschaligheid maakt dat we kunnen aansluiten bij wat iemand nodig heeft. Onze deur staat open voor een rondleiding.',
+      spreker: 'Wim Postma',
+      sprekerRol: 'Bestuurder',
+      duurSchatting: '0:48',
+      isAiStem: false,
+    },
+    videoTour: {
+      posterUrl: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=1600&q=80',
+      duur: '5:21',
+      titel: 'Rondleiding met de bestuurder',
+      type: 'rondleiding',
+    },
+    tour360: {
+      posterUrl: 'https://images.unsplash.com/photo-1631679706909-1844bbd07221?w=1200&q=80',
+      ruimtes: ['Entreehal', 'Woongroep Eik', 'Voorbeeldkamer', 'Tuin', 'Fysio'],
     },
   },
 }
@@ -658,6 +724,14 @@ const residentieMarekade: Locatie = {
       samenvatting: 'Aandacht voor personeelsbezetting in nachtdiensten — organisatie werkt aan herstelplan, herinspectie 2025.',
     },
   },
+  media: {
+    videoTour: {
+      posterUrl: 'https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=1600&q=80',
+      duur: '6:04',
+      titel: 'Drone-overzicht waterfront en gemeenschappelijke ruimtes',
+      type: 'drone',
+    },
+  },
 }
 
 const zonnehofAanleun: Locatie = {
@@ -787,6 +861,16 @@ const zonnehofAanleun: Locatie = {
       status: 'voldoet',
       url: 'https://www.igj.nl/onderwerpen/verpleeghuiszorg',
       samenvatting: 'Voldoet aan normen voor wijkverpleging. Doorstroom naar verpleeghuis goed georganiseerd.',
+    },
+  },
+  media: {
+    welkomsboodschap: {
+      tekst:
+        'Hallo, ik ben Ineke, coördinator bij Zonnehof Aanleun. Onze achtentwintig aanleunwoningen liggen direct naast het verpleeghuis — dus u woont zelfstandig, maar zorg is dichtbij als het nodig wordt. Veel van onze bewoners blijven hier wonen tot ze meer zorg nodig hebben, en doorstromen naar het verpleeghuis betekent dat u niet opnieuw hoeft te verhuizen. Een rondleiding is altijd mogelijk.',
+      spreker: 'Ineke Vlas',
+      sprekerRol: 'Coördinator aanleunwoningen',
+      duurSchatting: '0:56',
+      isAiStem: true,
     },
   },
 }
