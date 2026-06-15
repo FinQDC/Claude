@@ -1,0 +1,37 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-cream text-ink font-sans antialiased leading-relaxed;
+  }
+
+  ::selection {
+    background: theme('colors.terracotta.DEFAULT');
+    color: theme('colors.cream.DEFAULT');
+  }
+}
+
+@layer components {
+  .wrap {
+    @apply max-w-wrap mx-auto px-8;
+  }
+
+  .dropcap::first-letter {
+    @apply font-serif font-medium float-left text-terracotta;
+    font-size: 48px;
+    line-height: 0.9;
+    margin: 6px 12px 0 0;
+  }
+}
+
+@media (max-width: 560px) {
+  .wrap {
+    @apply px-5;
+  }
+}
